@@ -1,0 +1,35 @@
+package com.epam.upskill.springcore.model;
+
+import lombok.*;
+
+import javax.persistence.*;
+
+/**
+ * @className: Specialization  $
+ * @description: TODO
+ * @date: 08 November 2023 $
+ * @time: 5:24 AM 28 $
+ * @author: Qudratjon Komilov
+ */
+
+@Entity
+@Table(name = "specialization")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Specialization {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "specialization_name", nullable = false)
+    private String specializationName;
+
+    // There should be a definition for how this entity relates to others,
+    // but it's not fully clear from the diagram, assuming it's related to the Trainer entity.
+
+}
+

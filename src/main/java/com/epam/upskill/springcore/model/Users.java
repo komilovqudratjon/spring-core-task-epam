@@ -5,8 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 /**
- * @className: Users  $
- * @description: TODO
+ * @description: Entity class for TrainingType.
  * @date: 08 November 2023 $
  * @time: 5:17 AM 26 $
  * @author: Qudratjon Komilov

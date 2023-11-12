@@ -1,4 +1,4 @@
-package com.epam.upskill.springcore.model.DTOs;
+package com.epam.upskill.springcore.model.dtos;
 
 /**
  * @className: SpecializationRecord  $
@@ -7,7 +7,6 @@ package com.epam.upskill.springcore.model.DTOs;
  * @time: 3:00 PM 28 $
  * @author: Qudratjon Komilov
  */
-public record UserDTO(Long id, String firstName, String lastName, String username, Boolean isActive) {
+public record SpecializationDTO(Long id, String specializationName) {
 }
-
 

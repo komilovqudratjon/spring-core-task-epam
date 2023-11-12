@@ -5,17 +5,15 @@ import lombok.*;
 import javax.persistence.*;
 
 /**
- * @className: Specialization  $
- * @description: TODO
+ * @description: Entity class for Specialization.
  * @date: 08 November 2023 $
  * @time: 5:24 AM 28 $
  * @author: Qudratjon Komilov
  */
 
 @Entity
-@Table(name = "specialization")
+@Table(name = "specializationId")
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

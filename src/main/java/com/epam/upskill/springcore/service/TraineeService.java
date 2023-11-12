@@ -1,17 +1,14 @@
 package com.epam.upskill.springcore.service;
 
-import com.epam.upskill.springcore.model.DTOs.TraineeDTO;
-import com.epam.upskill.springcore.model.Trainee;
+import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
+import com.epam.upskill.springcore.model.dtos.TraineeDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 /**
- * @className: TraineeService  $
- * @description: TODO
+ * @description: Service interface for Trainee entity.
  * @date: 08 November 2023 $
  * @time: 5:42 AM 37 $
  * @author: Qudratjon Komilov
@@ -19,12 +16,12 @@ import java.util.Optional;
 
 
 public interface TraineeService {
-    TraineeDTO createOrUpdateTrainee(Trainee trainee);
+    TraineeDTO createOrUpdateTrainee(ResTraineeDTO trainee);
 
     void deleteTrainee(Long id);
 
     TraineeDTO getTraineeById(Long id);
 
-    Page<TraineeDTO> getAllTrainees(Pageable pageable, Date dateOfBirth, String address);
+    Page<TraineeDTO> getTraineesByFilter(Pageable pageable, Date dateOfBirth, String address);
 }
 

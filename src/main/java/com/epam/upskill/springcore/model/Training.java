@@ -1,12 +1,12 @@
 package com.epam.upskill.springcore.model;
+
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 /**
- * @className: Training  $
- * @description: TODO
+ * @description: Entity class for Training.
  * @date: 08 November 2023 $
  * @time: 5:20 AM 58 $
  * @author: Qudratjon Komilov

@@ -1,10 +1,12 @@
 package com.epam.upskill.springcore.component;
 
 import com.epam.upskill.springcore.model.*;
-import com.epam.upskill.springcore.repository.*;
-import com.epam.upskill.springcore.service.dbService.common.TraineeDB;
-import com.epam.upskill.springcore.service.dbService.common.TrainerDB;
-import com.epam.upskill.springcore.service.dbService.common.TrainingDB;
+import com.epam.upskill.springcore.repository.SpecializationRepository;
+import com.epam.upskill.springcore.repository.TrainingTypeRepository;
+import com.epam.upskill.springcore.repository.UserRepository;
+import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
+import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
+import com.epam.upskill.springcore.service.db.common.TrainingDatabase;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
- * @className: DataLoader  $
- * @description: TODO
+ * @description: generate data for database
  * @date: 21 October 2023 $
  * @time: 4:34 PM 55 $
  * @author: Qudratjon Komilov
@@ -26,9 +27,9 @@ import java.util.Date;
 @Slf4j
 public class DataLoader implements CommandLineRunner {
 
-    private final TraineeDB traineeRepository;
-    private final TrainerDB trainerRepository;
-    private final TrainingDB trainingRepository;
+    private final TraineeDatabase traineeRepository;
+    private final TrainerDatabase trainerRepository;
+    private final TrainingDatabase trainingRepository;
     private final TrainingTypeRepository trainingTypeRepository;
     private final SpecializationRepository specializationRepository;
     private final UserRepository userRepository;
@@ -39,7 +40,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         log.info("Loading data...");
 
-//        generateData();
+        generateData();
 
         log.info("...data loaded");
 
@@ -70,7 +71,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Now, create a new Specialization
             Specialization specialization = Specialization.builder()
-                    .specializationName(lorem.getWords(1, 3)) // Random specialization name
+                    .specializationName(lorem.getWords(1, 3)) // Random specializationId name
                     .build();
 
             // Save the Specialization to the repository (assuming there is a specializationRepository)

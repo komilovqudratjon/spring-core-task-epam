@@ -1,4 +1,4 @@
-package com.epam.upskill.springcore.model.DTOs;
+package com.epam.upskill.springcore.model.dtos;
 
 /**
  * @className: SpecializationRecord  $

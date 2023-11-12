@@ -1,15 +1,12 @@
 package com.epam.upskill.springcore.service;
 
-import com.epam.upskill.springcore.model.DTOs.TrainerDTO;
-import com.epam.upskill.springcore.model.Trainer;
-import com.epam.upskill.springcore.service.dbService.common.TrainerDB;
+import com.epam.upskill.springcore.model.dtos.ResTrainerDTO;
+import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
- * @className: TrainerService  $
- * @description: TODO
+ * @description: Service interface for Trainer entity.
  * @date: 08 November 2023 $
  * @time: 5:43 AM 30 $
  * @author: Qudratjon Komilov
@@ -17,7 +14,7 @@ import java.util.Optional;
 
 
 public interface TrainerService {
-    TrainerDTO createOrUpdateTrainer(Trainer trainer);
+    TrainerDTO createOrUpdateTrainer(ResTrainerDTO trainer);
 
     TrainerDTO getTrainerById(Long id);
 

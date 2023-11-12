@@ -8,8 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * @className: TraineeRepository  $
- * @description: TODO
+ * @description: Repository interface for Trainee entity.
  * @date: 08 November 2023 $
  * @time: 5:37 AM 43 $
  * @author: Qudratjon Komilov

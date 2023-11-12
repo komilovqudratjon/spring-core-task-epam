@@ -5,8 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * @className: SpecializationRepository  $
- * @description: TODO
+ * @description: Repository interface for Specialization entity.
  * @date: 08 November 2023 $
  * @time: 5:36 AM 25 $
  * @author: Qudratjon Komilov
@@ -14,5 +13,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SpecializationRepository extends JpaRepository<Specialization, Long> {
-    // Custom methods can be defined here if needed
 }

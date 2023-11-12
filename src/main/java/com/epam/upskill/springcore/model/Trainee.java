@@ -1,8 +1,7 @@
 package com.epam.upskill.springcore.model;
 
 /**
- * @className: Trainee  $
- * @description: TODO
+ * @description: Entity class for Trainee.
  * @date: 08 November 2023 $
  * @time: 5:22 AM 05 $
  * @author: Qudratjon Komilov

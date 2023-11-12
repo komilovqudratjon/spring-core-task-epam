@@ -1,16 +1,15 @@
 package com.epam.upskill.springcore.service;
 
-import com.epam.upskill.springcore.model.DTOs.TrainingDTO;
-import com.epam.upskill.springcore.model.Training;
-import com.epam.upskill.springcore.service.dbService.Specifications.TrainingSpecifications;
+import com.epam.upskill.springcore.model.dtos.ResTrainingDTO;
+import com.epam.upskill.springcore.model.dtos.TrainingDTO;
+import com.epam.upskill.springcore.service.db.specifications.TrainingSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 /**
- * @className: TrainingService  $
- * @description: TODO
+ * @description: Service interface for Training entity.
  * @date: 08 November 2023 $
  * @time: 5:43 AM 30 $
  * @author: Qudratjon Komilov
@@ -18,7 +17,7 @@ import java.util.List;
 
 
 public interface TrainingService {
-    TrainingDTO createOrUpdateTraining(Training trainer);
+    TrainingDTO createOrUpdateTraining(ResTrainingDTO trainer);
 
     TrainingDTO getTrainingById(Long id);
 

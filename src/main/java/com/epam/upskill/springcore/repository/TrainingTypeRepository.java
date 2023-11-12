@@ -5,8 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * @className: TrainingTypeRepository  $
- * @description: TODO
+ * @description: Repository interface for TrainingType entity.
  * @date: 08 November 2023 $
  * @time: 5:36 AM 48 $
  * @author: Qudratjon Komilov
@@ -15,5 +14,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TrainingTypeRepository extends JpaRepository<TrainingType, Long> {
-    // Custom methods can be defined here if needed
 }

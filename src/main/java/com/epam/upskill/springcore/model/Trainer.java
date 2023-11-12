@@ -6,8 +6,7 @@ import javax.persistence.*;
 
 
 /**
- * @className: Trainee  $
- * @description: TODO
+ * @description: Entity class for Trainer.
  * @date: 08 November 2023 $
  * @time: 5:18 AM 34 $
  * @author: Qudratjon Komilov

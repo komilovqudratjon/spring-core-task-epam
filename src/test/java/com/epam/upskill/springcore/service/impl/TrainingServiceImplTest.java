@@ -1,11 +1,14 @@
 package com.epam.upskill.springcore.service.impl;
 
+import com.epam.upskill.springcore.model.*;
 import com.epam.upskill.springcore.model.dtos.ResTrainingDTO;
 import com.epam.upskill.springcore.model.dtos.TrainingDTO;
-import com.epam.upskill.springcore.model.*;
 import com.epam.upskill.springcore.repository.TrainerRepository;
-import com.epam.upskill.springcore.service.db.specifications.TrainingSpecifications;
+import com.epam.upskill.springcore.repository.TrainingTypeRepository;
+import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
+import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainingDatabase;
+import com.epam.upskill.springcore.service.db.specifications.TrainingSpecifications;
 import com.epam.upskill.springcore.service.impl.mapper.TrainingDTOMapper;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
@@ -14,11 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -37,17 +40,29 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TrainingServiceImplTest {
-    @Mock
-    private TrainingDatabase trainingDBMock;
+
 
     @Mock
     private TrainerRepository trainerRepositoryMock; // Mock for the TrainerRepository
 
-    @Mock
-    private TrainingDTOMapper trainingDTOMapperMock;
 
     @InjectMocks
     private TrainingServiceImpl trainingService;
+    @Mock
+    private TrainingDatabase trainingRepository;
+
+    @Mock
+    private TrainingDTOMapper trainingDTOMapper;
+
+    @Mock
+    private TrainerDatabase trainerRepository;
+
+    @Mock
+    private TraineeDatabase traineeRepository;
+
+    @Mock
+    private TrainingTypeRepository trainingTypeRepository;
+
 
     // Sample entities for use in tests
     private Training training;
@@ -87,35 +102,68 @@ class TrainingServiceImplTest {
                 .trainingDate(new Date()) // Replace with a randomly generated Date
                 .trainingDuration(1) // Random training duration
                 .build();
-        trainingDTO = trainingDTOMapperMock.apply(training);
+        trainingDTO = trainingDTOMapper.apply(training);
 
     }
 
     @Test
-    void createOrUpdateTraining() {
-//        when(trainingDBMock.save(any(Training.class))).thenReturn(training);
-//        when(trainingDTOMapperMock.apply(training)).thenReturn(trainingDTO);
+    void createOrUpdateTraining_Success() {
+        // Given
+        ResTrainingDTO resTrainingDTO = new ResTrainingDTO(training.getId(), training.getTrainer().getId(), training.getTrainee().getId(), training.getTrainingName(), training.getTrainingType().getId(), training.getTrainingDate(), training.getTrainingDuration());
+        when(trainerRepository.findById(any())).thenReturn(Optional.of(training.getTrainer()));
+        when(traineeRepository.findById(any())).thenReturn(Optional.of(training.getTrainee()));
+        when(trainingTypeRepository.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
+        when(trainingRepository.save(any())).thenReturn(training);
+        when(trainingDTOMapper.apply(any())).thenReturn(trainingDTO);
 
-//        TrainingDTO result = trainingService.createOrUpdateTraining(new ResTrainingDTO(null, 1L, 1L, "koinot",1L, new Date(), 1));
-//        assertEquals(trainingDTO, result);
+        // When
+        TrainingDTO result = trainingService.createOrUpdateTraining(resTrainingDTO);
 
-//        verify(trainingDBMock).save(training);
+        // Then
+        assertNull(result);
+        assertEquals(trainingDTO, result);
+        verify(trainingRepository).save(any(Training.class));
+    }
+
+    @Test
+    void createOrUpdateTraining_TrainerNotFound() {
+        // Given
+        ResTrainingDTO resTrainingDTO = new ResTrainingDTO(training.getId(), training.getTrainer().getId(), training.getTrainee().getId(), training.getTrainingName(), training.getTrainingType().getId(), training.getTrainingDate(), training.getTrainingDuration());
+        when(trainerRepository.findById(any())).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> trainingService.createOrUpdateTraining(resTrainingDTO));
+    }
+
+    // Similar tests for TraineeNotFound and TrainingTypeNotFound
+
+    @Test
+    void createOrUpdateTraining_Exception() {
+        // Given
+        ResTrainingDTO resTrainingDTO = new ResTrainingDTO(training.getId(), training.getTrainer().getId(), training.getTrainee().getId(), training.getTrainingName(), training.getTrainingType().getId(), training.getTrainingDate(), training.getTrainingDuration());
+        when(trainerRepository.findById(any())).thenReturn(Optional.of(training.getTrainer()));
+        when(traineeRepository.findById(any())).thenReturn(Optional.of(training.getTrainee()));
+        when(trainingTypeRepository.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
+        when(trainingRepository.save(any())).thenThrow(new RuntimeException("Unexpected error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> trainingService.createOrUpdateTraining(resTrainingDTO));
     }
 
     @Test
     void getTrainingById() {
-        when(trainingDBMock.findById(anyLong())).thenReturn(Optional.of(training));
-        when(trainingDTOMapperMock.apply(training)).thenReturn(trainingDTO);
+        when(trainingRepository.findById(anyLong())).thenReturn(Optional.of(training));
+        when(trainingDTOMapper.apply(training)).thenReturn(trainingDTO);
 
         TrainingDTO result = trainingService.getTrainingById(1L);
 
-        verify(trainingDBMock).findById(1L);
+        verify(trainingRepository).findById(1L);
         assertEquals(trainingDTO, result);
     }
 
     @Test
     void getTrainingById_NotFound() {
-        when(trainingDBMock.findById(anyLong())).thenReturn(Optional.empty());
+        when(trainingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> trainingService.getTrainingById(1L));
     }
@@ -123,12 +171,12 @@ class TrainingServiceImplTest {
     @Test
     void getAllTrainings() {
         List<Training> trainingList = List.of(training);
-        when(trainingDBMock.findAll()).thenReturn(trainingList);
-        when(trainingDTOMapperMock.apply(training)).thenReturn(trainingDTO);
+        when(trainingRepository.findAll()).thenReturn(trainingList);
+        when(trainingDTOMapper.apply(training)).thenReturn(trainingDTO);
 
         List<TrainingDTO> result = trainingService.getAllTrainings();
 
-        verify(trainingDBMock).findAll();
+        verify(trainingRepository).findAll();
         assertNotNull(result);
         assertFalse(result.isEmpty());
         assertEquals(trainingDTO, result.get(0));
@@ -143,18 +191,18 @@ class TrainingServiceImplTest {
 
         // Create a mock Page<Training> to be returned by the repository
         Page<Training> trainingPageMock = mock(Page.class);
-        when(trainingDBMock.findAll(trainingSpecificationsMock, pageableMock)).thenReturn(trainingPageMock);
+        when(trainingRepository.findAll(trainingSpecificationsMock, pageableMock)).thenReturn(trainingPageMock);
 
         // Create a mock Page<TrainingDTO> which we will assert
         Page<TrainingDTO> trainingDTOPageMock = mock(Page.class);
-        when(trainingPageMock.map(trainingDTOMapperMock)).thenReturn(trainingDTOPageMock);
+        when(trainingPageMock.map(trainingDTOMapper)).thenReturn(trainingDTOPageMock);
 
         // Call the method to test
         Page<TrainingDTO> result = trainingService.getTrainingsByFilter(pageableMock, trainingSpecificationsMock);
 
         // Verify the interactions
-        verify(trainingDBMock).findAll(trainingSpecificationsMock, pageableMock);
-        verify(trainingPageMock).map(trainingDTOMapperMock);
+        verify(trainingRepository).findAll(trainingSpecificationsMock, pageableMock);
+        verify(trainingPageMock).map(trainingDTOMapper);
 
         // Assert the result
         assertEquals(trainingDTOPageMock, result);

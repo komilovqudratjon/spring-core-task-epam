@@ -7,6 +7,7 @@ import com.epam.upskill.springcore.model.dtos.ResTrainerDTO;
 import com.epam.upskill.springcore.model.dtos.SpecializationDTO;
 import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 import com.epam.upskill.springcore.model.dtos.UserDTO;
+import com.epam.upskill.springcore.repository.SpecializationRepository;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TrainerDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +35,6 @@ import static org.mockito.Mockito.*;
  */
 
 
-@ExtendWith(MockitoExtension.class)
 class TrainerServiceImplTest {
 
     @Mock
@@ -40,6 +42,9 @@ class TrainerServiceImplTest {
 
     @Mock
     private TrainerDTOMapper trainerDTOMapper;
+
+    @Mock
+    private SpecializationRepository specializationRepository;
 
     @InjectMocks
     private TrainerServiceImpl trainerService;
@@ -49,6 +54,8 @@ class TrainerServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         // Create static test data for Users and Specialization
         Users user = new Users(1L, "John", "Doe", "johndoe", "password123", true);
         Specialization specialization = new Specialization(1L, "Java Developer");
@@ -61,19 +68,55 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void createOrUpdateTrainer() {
-//        when(trainerRepository.save(any(Trainer.class))).thenReturn(trainer);
-//        when(trainerDTOMapper.apply(any(Trainer.class))).thenReturn(trainerDTO);
+    void createOrUpdateTrainer_Success() {
+        // Given
+        ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
+        when(specializationRepository.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
+        when(trainerRepository.findById(any())).thenReturn(Optional.of(trainer));
+        when(trainerRepository.save(any())).thenReturn(trainer);
+        when(trainerDTOMapper.apply(any())).thenReturn(trainerDTO);
 
-//        TrainerDTO result = trainerService.createOrUpdateTrainer(new ResTrainerDTO(null, 1L, 1L)); // Use a new Trainer object for creation
-//
-//        assertNotNull(result);
-//        assertEquals(trainerDTO, result); // assuming that trainerDTO is the expected result
+        // When
+        TrainerDTO result = trainerService.createOrUpdateTrainer(resTrainerDTO);
 
-//        verify(trainerRepository).save(any(Trainer.class));
-//        verify(trainerDTOMapper).apply(any(Trainer.class));
+        // Then
+        assertNotNull(result);
+        assertEquals(trainerDTO, result);
+        verify(trainerRepository).save(any(Trainer.class));
     }
 
+    @Test
+    void createOrUpdateTrainer_SpecializationNotFound() {
+        // Given
+        ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
+        when(specializationRepository.findById(any())).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> trainerService.createOrUpdateTrainer(resTrainerDTO));
+    }
+
+    @Test
+    void createOrUpdateTrainer_UserNotFound() {
+        // Given
+        ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
+        when(specializationRepository.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
+        when(trainerRepository.findById(any())).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> trainerService.createOrUpdateTrainer(resTrainerDTO));
+    }
+
+    @Test
+    void createOrUpdateTrainer_Exception() {
+        // Given
+        ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
+        when(specializationRepository.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
+        when(trainerRepository.findById(any())).thenReturn(Optional.of(trainer));
+        when(trainerRepository.save(any())).thenThrow(new RuntimeException("Unexpected error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> trainerService.createOrUpdateTrainer(resTrainerDTO));
+    }
     @Test
     void getTrainerById_found() {
         when(trainerRepository.findById(anyLong())).thenReturn(Optional.of(trainer));

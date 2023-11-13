@@ -7,7 +7,7 @@ import com.epam.upskill.springcore.service.db.specifications.TrainingSpecificati
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,10 +35,10 @@ public class TrainingController {
      * @param training The training data transfer object.
      * @return ResponseEntity containing the created or updated TrainingDTO.
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<TrainingDTO> createTraining(@Valid @RequestBody ResTrainingDTO training) {
-        TrainingDTO createdTraining = trainingService.createOrUpdateTraining(training);
-        return ResponseEntity.ok(createdTraining);
+    public TrainingDTO createOrUpdate(@Valid @RequestBody ResTrainingDTO training) {
+        return trainingService.createOrUpdate(training);
     }
 
     /**
@@ -47,10 +47,10 @@ public class TrainingController {
      * @param id The ID of the training.
      * @return ResponseEntity containing the TrainingDTO.
      */
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public ResponseEntity<TrainingDTO> getTrainingById(@PathVariable Long id) {
-        TrainingDTO trainingDTO = trainingService.getTrainingById(id);
-        return ResponseEntity.ok(trainingDTO);
+    public TrainingDTO getById(@PathVariable Long id) {
+        return trainingService.getById(id);
     }
 
     /**
@@ -58,10 +58,10 @@ public class TrainingController {
      *
      * @return ResponseEntity containing a list of TrainingDTOs.
      */
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<List<TrainingDTO>> getAllTrainings() {
-        List<TrainingDTO> trainings = trainingService.getAllTrainings();
-        return ResponseEntity.ok(trainings);
+    public List<TrainingDTO> getAllTrainings() {
+        return trainingService.getAll();
     }
 
     /**
@@ -76,14 +76,15 @@ public class TrainingController {
      * @param trainingDuration Optional filter by training duration.
      * @return ResponseEntity containing a page of TrainingDTOs.
      */
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/search")
-    public ResponseEntity<Page<TrainingDTO>> getAllTrainings(Pageable pageable,
-                                                             @RequestParam(required = false) Long traineeId,
-                                                             @RequestParam(required = false) Long trainerId,
-                                                             @RequestParam(required = false) String trainingName,
-                                                             @RequestParam(required = false) Long trainingTypeId,
-                                                             @RequestParam(required = false) Date trainingDate,
-                                                             @RequestParam(required = false) Integer trainingDuration) {
+    public Page<TrainingDTO> getAllTrainings(Pageable pageable,
+                                             @RequestParam(required = false) Long traineeId,
+                                             @RequestParam(required = false) Long trainerId,
+                                             @RequestParam(required = false) String trainingName,
+                                             @RequestParam(required = false) Long trainingTypeId,
+                                             @RequestParam(required = false) Date trainingDate,
+                                             @RequestParam(required = false) Integer trainingDuration) {
         TrainingSpecifications trainingSpecifications = TrainingSpecifications.builder()
                 .traineeId(traineeId)
                 .trainerId(trainerId)
@@ -92,7 +93,6 @@ public class TrainingController {
                 .trainingDate(trainingDate)
                 .trainingDuration(trainingDuration)
                 .build();
-        Page<TrainingDTO> trainingPage = trainingService.getTrainingsByFilter(pageable, trainingSpecifications);
-        return ResponseEntity.ok(trainingPage);
+        return trainingService.getByFilter(pageable, trainingSpecifications);
     }
 }

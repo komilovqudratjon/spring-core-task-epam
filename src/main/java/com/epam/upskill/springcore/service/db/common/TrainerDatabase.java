@@ -1,6 +1,7 @@
 package com.epam.upskill.springcore.service.db.common;
 
 import com.epam.upskill.springcore.model.Trainer;
+import com.epam.upskill.springcore.repository.TrainerRepository;
 import com.epam.upskill.springcore.service.db.GenericDatabase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import java.util.Optional;
 public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
 
     private final GenericDatabase<Trainer, Long> traineeDAO;
-    private final com.epam.upskill.springcore.repository.TrainerRepository traineeRepository;
+    private final TrainerRepository traineeRepository;
 
     /**
      * Saves a Trainer entity.

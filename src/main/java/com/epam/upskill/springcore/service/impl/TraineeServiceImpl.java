@@ -44,7 +44,7 @@ public class TraineeServiceImpl implements TraineeService {
      * @return the created or updated TraineeDTO
      */
     @Override
-    public TraineeDTO createOrUpdateTrainee(ResTraineeDTO trainee) {
+    public TraineeDTO createOrUpdate(ResTraineeDTO trainee) {
 
         log.debug("Creating or updating trainee: {}", trainee);
         Trainee trainee1 = new Trainee();
@@ -66,7 +66,7 @@ public class TraineeServiceImpl implements TraineeService {
      * @param id the ID of the trainee
      */
     @Override
-    public void deleteTrainee(Long id) {
+    public void delete(Long id) {
         log.debug("Deleting trainee by id: {}", id);
         traineeRepository.deleteById(id);
         log.debug("Deleted trainee by id: {}", id);
@@ -80,7 +80,7 @@ public class TraineeServiceImpl implements TraineeService {
      * @throws EntityNotFoundException if the trainee is not found
      */
     @Override
-    public TraineeDTO getTraineeById(Long id) {
+    public TraineeDTO getById(Long id) {
         log.debug("Retrieving trainee by id: {}", id);
         Optional<Trainee> byId = traineeRepository.findById(id);
         log.debug("Retrieved trainee by id: {}", byId);
@@ -96,7 +96,7 @@ public class TraineeServiceImpl implements TraineeService {
      * @return a list of TraineeDTOs
      */
     @Override
-    public Page<TraineeDTO> getTraineesByFilter(Pageable pageable, Date dateOfBirth, String address) {
+    public Page<TraineeDTO> getByFilter(Pageable pageable, Date dateOfBirth, String address) {
         log.debug("Retrieving all trainees");
         Page<Trainee> trainees = traineeRepository.findAll(new TraineeSpecifications(dateOfBirth, address), pageable);
         log.debug("Retrieved all trainees: {}", trainees);

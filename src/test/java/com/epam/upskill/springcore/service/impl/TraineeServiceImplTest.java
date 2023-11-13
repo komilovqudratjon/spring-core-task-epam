@@ -12,11 +12,9 @@ import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -71,7 +69,7 @@ class TraineeServiceImplTest {
         when(traineeRepository.save(any(Trainee.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // Act
-        TraineeDTO result = traineeService.createOrUpdateTrainee(traineeDTO);
+        TraineeDTO result = traineeService.createOrUpdate(traineeDTO);
 
         // Assert
         assertNull(result);
@@ -86,7 +84,7 @@ class TraineeServiceImplTest {
         Long id = 1L;
 
         // Act
-        traineeService.deleteTrainee(id);
+        traineeService.delete(id);
 
         // Assert
         verify(traineeRepository).deleteById(id);
@@ -102,7 +100,7 @@ class TraineeServiceImplTest {
 
         // Act&Assert
         assertThrows(EntityNotFoundException.class, () -> {
-            traineeService.getTraineeById(id);
+            traineeService.getById(id);
         });
         verify(traineeRepository).findById(id);
         verify(traineeDTOMapper).apply(mockTrainee);
@@ -119,7 +117,7 @@ class TraineeServiceImplTest {
         when(traineeRepository.findAll(any(TraineeSpecifications.class), eq(pageable))).thenReturn(page);
 
         // Act
-        Page<TraineeDTO> result = traineeService.getTraineesByFilter(pageable, dateOfBirth, address);
+        Page<TraineeDTO> result = traineeService.getByFilter(pageable, dateOfBirth, address);
 
         // Assert
         assertNotNull(result);

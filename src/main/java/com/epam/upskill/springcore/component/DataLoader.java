@@ -47,7 +47,7 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void generateData() {
-        for (long i = 0; i < 100; i++) {
+        for (long i = 0; i < 10; i++) {
             // Create a new random User
             Users user = new Users();
             user.setFirstName(lorem.getName());        // Random first name
@@ -57,7 +57,10 @@ public class DataLoader implements CommandLineRunner {
             user.setIsActive(true);                    // Active user status
 
             // Save the User to the repository (assuming there is a userRepository)
-            user = userRepository.save(user);
+            try {
+                user = userRepository.save(user);
+            } catch (Exception ignored) {
+            }
 
             // Now, create a new Trainee with the new User
             Trainee trainee = Trainee.builder()
@@ -67,7 +70,10 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             // Save the Trainee to the repository (assuming there is a traineeRepository)
-            traineeRepository.save(trainee);
+            try {
+                traineeRepository.save(trainee);
+            } catch (Exception ignored) {
+            }
 
             // Now, create a new Specialization
             Specialization specialization = Specialization.builder()
@@ -75,7 +81,10 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             // Save the Specialization to the repository (assuming there is a specializationRepository)
-            specializationRepository.save(specialization);
+            try {
+                specializationRepository.save(specialization);
+            } catch (Exception ignored) {
+            }
 
             // Now, create a new Trainer with the new User
             Trainer trainer = Trainer.builder()
@@ -84,7 +93,10 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             // Save the Trainer to the repository (assuming there is a trainerRepository)
-            trainerRepository.save(trainer);
+            try {
+                trainerRepository.save(trainer);
+            } catch (Exception ignored) {
+            }
 
             // Now, create a new TrainingType
             TrainingType trainingType = TrainingType.builder()
@@ -92,7 +104,10 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             // Save the TrainingType to the repository (assuming there is a trainingTypeRepository)
-            trainingTypeRepository.save(trainingType);
+            try {
+                trainingTypeRepository.save(trainingType);
+            } catch (Exception ignored) {
+            }
 
             // Now, create a new Training
             Training training = Training.builder()
@@ -105,7 +120,10 @@ public class DataLoader implements CommandLineRunner {
                     .build();
 
             // Save the Training to the repository (assuming there is a trainingRepository)
-            trainingRepository.save(training);
+            try {
+                trainingRepository.save(training);
+            } catch (Exception ignored) {
+            }
         }
     }
 }

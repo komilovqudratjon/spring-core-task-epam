@@ -117,7 +117,7 @@ class TrainingServiceImplTest {
         when(trainingDTOMapper.apply(any())).thenReturn(trainingDTO);
 
         // When
-        TrainingDTO result = trainingService.createOrUpdateTraining(resTrainingDTO);
+        TrainingDTO result = trainingService.createOrUpdate(resTrainingDTO);
 
         // Then
         assertNull(result);
@@ -132,7 +132,7 @@ class TrainingServiceImplTest {
         when(trainerRepository.findById(any())).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> trainingService.createOrUpdateTraining(resTrainingDTO));
+        assertThrows(EntityNotFoundException.class, () -> trainingService.createOrUpdate(resTrainingDTO));
     }
 
     // Similar tests for TraineeNotFound and TrainingTypeNotFound
@@ -147,7 +147,7 @@ class TrainingServiceImplTest {
         when(trainingRepository.save(any())).thenThrow(new RuntimeException("Unexpected error"));
 
         // When & Then
-        assertThrows(RuntimeException.class, () -> trainingService.createOrUpdateTraining(resTrainingDTO));
+        assertThrows(RuntimeException.class, () -> trainingService.createOrUpdate(resTrainingDTO));
     }
 
     @Test
@@ -155,7 +155,7 @@ class TrainingServiceImplTest {
         when(trainingRepository.findById(anyLong())).thenReturn(Optional.of(training));
         when(trainingDTOMapper.apply(training)).thenReturn(trainingDTO);
 
-        TrainingDTO result = trainingService.getTrainingById(1L);
+        TrainingDTO result = trainingService.getById(1L);
 
         verify(trainingRepository).findById(1L);
         assertEquals(trainingDTO, result);
@@ -165,7 +165,7 @@ class TrainingServiceImplTest {
     void getTrainingById_NotFound() {
         when(trainingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> trainingService.getTrainingById(1L));
+        assertThrows(RuntimeException.class, () -> trainingService.getById(1L));
     }
 
     @Test
@@ -174,7 +174,7 @@ class TrainingServiceImplTest {
         when(trainingRepository.findAll()).thenReturn(trainingList);
         when(trainingDTOMapper.apply(training)).thenReturn(trainingDTO);
 
-        List<TrainingDTO> result = trainingService.getAllTrainings();
+        List<TrainingDTO> result = trainingService.getAll();
 
         verify(trainingRepository).findAll();
         assertNotNull(result);
@@ -198,7 +198,7 @@ class TrainingServiceImplTest {
         when(trainingPageMock.map(trainingDTOMapper)).thenReturn(trainingDTOPageMock);
 
         // Call the method to test
-        Page<TrainingDTO> result = trainingService.getTrainingsByFilter(pageableMock, trainingSpecificationsMock);
+        Page<TrainingDTO> result = trainingService.getByFilter(pageableMock, trainingSpecificationsMock);
 
         // Verify the interactions
         verify(trainingRepository).findAll(trainingSpecificationsMock, pageableMock);

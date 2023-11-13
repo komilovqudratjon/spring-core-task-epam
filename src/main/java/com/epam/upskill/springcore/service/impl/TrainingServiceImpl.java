@@ -47,7 +47,7 @@ public class TrainingServiceImpl implements TrainingService {
      * @return the created or updated TrainingDTO
      */
     @Override
-    public TrainingDTO createOrUpdateTraining(ResTrainingDTO training) {
+    public TrainingDTO createOrUpdate(ResTrainingDTO training) {
         log.debug("Request to create or update training: {}", training);
         Training trainer = new Training();
         trainer.setId(training.id());
@@ -80,7 +80,7 @@ public class TrainingServiceImpl implements TrainingService {
      * @throws EntityNotFoundException if the training is not found
      */
     @Override
-    public TrainingDTO getTrainingById(Long id) {
+    public TrainingDTO getById(Long id) {
         log.debug("Request to retrieve training by id: {}", id);
         Optional<Training> training = trainingRepository.findById(id);
 
@@ -96,7 +96,7 @@ public class TrainingServiceImpl implements TrainingService {
      * @return a list of TrainingDTOs
      */
     @Override
-    public List<TrainingDTO> getAllTrainings() {
+    public List<TrainingDTO> getAll() {
         log.debug("Request to retrieve all trainings");
         List<TrainingDTO> list = trainingRepository.findAll().stream().map(trainingDTOMapper).toList();
         log.info("All trainings retrieved successfully");
@@ -111,7 +111,7 @@ public class TrainingServiceImpl implements TrainingService {
      * @return a page of TrainingDTOs
      */
     @Override
-    public Page<TrainingDTO> getTrainingsByFilter(Pageable pageable, TrainingSpecifications trainingSpecifications) {
+    public Page<TrainingDTO> getByFilter(Pageable pageable, TrainingSpecifications trainingSpecifications) {
         log.debug("Request to retrieve trainings by filter");
         Page<Training> trainings = trainingRepository.findAll(trainingSpecifications, pageable);
         log.info("Trainers retrieved by filter successfully");

@@ -13,7 +13,7 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "trainer")
+@Table(name = "trainer", uniqueConstraints = {@UniqueConstraint(columnNames = {"specialization_id", "user_id"})})
 @Getter
 @Setter
 @AllArgsConstructor

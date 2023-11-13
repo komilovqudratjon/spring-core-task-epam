@@ -14,7 +14,7 @@ import java.util.List;
 
 
 public interface TrainerService {
-    TrainerDTO createOrUpdateTrainer(ResTrainerDTO trainer);
+    TrainerDTO createOrUpdate(ResTrainerDTO trainer);
 
     TrainerDTO getTrainerById(Long id);
 

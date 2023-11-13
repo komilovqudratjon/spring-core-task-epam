@@ -12,11 +12,9 @@ import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TrainerDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -77,7 +75,7 @@ class TrainerServiceImplTest {
         when(trainerDTOMapper.apply(any())).thenReturn(trainerDTO);
 
         // When
-        TrainerDTO result = trainerService.createOrUpdateTrainer(resTrainerDTO);
+        TrainerDTO result = trainerService.createOrUpdate(resTrainerDTO);
 
         // Then
         assertNotNull(result);
@@ -92,7 +90,7 @@ class TrainerServiceImplTest {
         when(specializationRepository.findById(any())).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> trainerService.createOrUpdateTrainer(resTrainerDTO));
+        assertThrows(EntityNotFoundException.class, () -> trainerService.createOrUpdate(resTrainerDTO));
     }
 
     @Test
@@ -103,7 +101,7 @@ class TrainerServiceImplTest {
         when(trainerRepository.findById(any())).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> trainerService.createOrUpdateTrainer(resTrainerDTO));
+        assertThrows(EntityNotFoundException.class, () -> trainerService.createOrUpdate(resTrainerDTO));
     }
 
     @Test
@@ -115,7 +113,7 @@ class TrainerServiceImplTest {
         when(trainerRepository.save(any())).thenThrow(new RuntimeException("Unexpected error"));
 
         // When & Then
-        assertThrows(RuntimeException.class, () -> trainerService.createOrUpdateTrainer(resTrainerDTO));
+        assertThrows(RuntimeException.class, () -> trainerService.createOrUpdate(resTrainerDTO));
     }
     @Test
     void getTrainerById_found() {

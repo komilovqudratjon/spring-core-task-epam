@@ -4,9 +4,7 @@ import com.epam.upskill.springcore.model.dtos.ResTrainerDTO;
 import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 import com.epam.upskill.springcore.service.TrainerService;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,7 +24,6 @@ import java.util.List;
 public class TrainerController {
 
     private final TrainerService trainerService;
-    private static final Logger logger = LoggerFactory.getLogger(TrainerController.class);
 
     /**
      * Endpoint for creating or updating a trainer.
@@ -34,12 +31,10 @@ public class TrainerController {
      * @param trainer The trainer data transfer object.
      * @return ResponseEntity containing the created or updated trainer.
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<TrainerDTO> createTrainer(@Valid @RequestBody ResTrainerDTO trainer) {
-        logger.info("Request to create/update a trainer: {}", trainer);
-        TrainerDTO createdTrainer = trainerService.createOrUpdateTrainer(trainer);
-        logger.info("Trainer created/updated successfully: {}", createdTrainer);
-        return ResponseEntity.ok(createdTrainer);
+    public TrainerDTO create(@Valid @RequestBody ResTrainerDTO trainer) {
+        return trainerService.createOrUpdate(trainer);
     }
 
     /**
@@ -48,12 +43,10 @@ public class TrainerController {
      * @param id The ID of the trainer to retrieve.
      * @return ResponseEntity containing the requested trainer.
      */
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public ResponseEntity<TrainerDTO> getTrainerById(@PathVariable Long id) {
-        logger.info("Request to get trainer by ID: {}", id);
-        TrainerDTO trainerDTO = trainerService.getTrainerById(id);
-        logger.info("Trainer retrieved successfully: {}", trainerDTO);
-        return ResponseEntity.ok(trainerDTO);
+    public TrainerDTO getById(@PathVariable Long id) {
+        return trainerService.getTrainerById(id);
     }
 
     /**
@@ -61,12 +54,10 @@ public class TrainerController {
      *
      * @return ResponseEntity containing a list of all trainers.
      */
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<List<TrainerDTO>> getAllTrainers() {
-        logger.info("Request to get all trainers");
-        List<TrainerDTO> trainers = trainerService.getAllTrainers();
-        logger.info("All trainers retrieved successfully");
-        return ResponseEntity.ok(trainers);
+    public List<TrainerDTO> getAll() {
+        return trainerService.getAllTrainers();
     }
 
 }

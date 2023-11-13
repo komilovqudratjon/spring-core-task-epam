@@ -13,7 +13,7 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "training")
+@Table(name = "training", uniqueConstraints = {@UniqueConstraint(columnNames = {"trainee_id", "trainer_id", "training_name", "training_type_id", "training_date"})})
 @Getter
 @Setter
 @AllArgsConstructor

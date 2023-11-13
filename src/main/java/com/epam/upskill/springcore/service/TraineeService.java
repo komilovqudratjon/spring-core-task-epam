@@ -16,12 +16,12 @@ import java.util.Date;
 
 
 public interface TraineeService {
-    TraineeDTO createOrUpdateTrainee(ResTraineeDTO trainee);
+    TraineeDTO createOrUpdate(ResTraineeDTO trainee);
 
-    void deleteTrainee(Long id);
+    void delete(Long id);
 
-    TraineeDTO getTraineeById(Long id);
+    TraineeDTO getById(Long id);
 
-    Page<TraineeDTO> getTraineesByFilter(Pageable pageable, Date dateOfBirth, String address);
+    Page<TraineeDTO> getByFilter(Pageable pageable, Date dateOfBirth, String address);
 }
 

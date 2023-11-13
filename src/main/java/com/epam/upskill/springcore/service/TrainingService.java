@@ -17,12 +17,12 @@ import java.util.List;
 
 
 public interface TrainingService {
-    TrainingDTO createOrUpdateTraining(ResTrainingDTO trainer);
+    TrainingDTO createOrUpdate(ResTrainingDTO trainer);
 
-    TrainingDTO getTrainingById(Long id);
+    TrainingDTO getById(Long id);
 
-    List<TrainingDTO> getAllTrainings();
+    List<TrainingDTO> getAll();
 
-    Page<TrainingDTO> getTrainingsByFilter(Pageable pageable, TrainingSpecifications trainingSpecifications);
+    Page<TrainingDTO> getByFilter(Pageable pageable, TrainingSpecifications trainingSpecifications);
 }
 

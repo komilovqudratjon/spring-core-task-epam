@@ -38,7 +38,7 @@ public class TrainerServiceImpl implements TrainerService {
      * @return the created or updated TrainerDTO
      */
     @Override
-    public TrainerDTO createOrUpdateTrainer(ResTrainerDTO trainer) {
+    public TrainerDTO createOrUpdate(ResTrainerDTO trainer) {
         log.debug("Request to create/update trainer: {}", trainer);
         try {
             Trainer trainer1 = new Trainer();

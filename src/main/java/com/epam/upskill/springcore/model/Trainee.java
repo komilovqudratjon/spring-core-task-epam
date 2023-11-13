@@ -13,7 +13,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "trainee")
+@Table(name = "trainee",uniqueConstraints = {@UniqueConstraint(columnNames = {"address","user_id","date_of_birth"})})
 @Getter
 @Setter
 @AllArgsConstructor

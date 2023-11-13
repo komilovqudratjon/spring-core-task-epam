@@ -6,7 +6,7 @@ import com.epam.upskill.springcore.service.TraineeService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,10 +31,10 @@ public class TraineeController {
      * @param trainee the trainee to be created or updated.
      * @return the created or updated trainee.
      */
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<TraineeDTO> createOrUpdateTrainee(@Valid @RequestBody ResTraineeDTO trainee) {
-        TraineeDTO result = traineeService.createOrUpdateTrainee(trainee);
-        return ResponseEntity.ok(result);
+    public TraineeDTO createOrUpdate(@Valid @RequestBody ResTraineeDTO trainee) {
+        return traineeService.createOrUpdate(trainee);
     }
 
     /**
@@ -43,10 +43,10 @@ public class TraineeController {
      * @param id the ID of the trainee to delete.
      * @return a response entity indicating the operation's success.
      */
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTrainee(@PathVariable Long id) {
-        traineeService.deleteTrainee(id);
-        return ResponseEntity.ok().build();
+    public void delete(@PathVariable Long id) {
+        traineeService.delete(id);
     }
 
     /**
@@ -55,10 +55,10 @@ public class TraineeController {
      * @param id the ID of the trainee.
      * @return the requested trainee if found.
      */
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public ResponseEntity<TraineeDTO> getTraineeById(@PathVariable Long id) {
-        TraineeDTO traineeDTO = traineeService.getTraineeById(id);
-        return traineeDTO != null ? ResponseEntity.ok(traineeDTO) : ResponseEntity.notFound().build();
+    public TraineeDTO getById(@PathVariable Long id) {
+        return traineeService.getById(id);
     }
 
     /**
@@ -69,12 +69,12 @@ public class TraineeController {
      * @param address     optional filter for address.
      * @return a page of trainees.
      */
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity<Page<TraineeDTO>> getAllTrainees(Pageable pageable,
-                                                           @RequestParam(required = false) Date dateOfBirth,
-                                                           @RequestParam(required = false) String address) {
-        Page<TraineeDTO> page = traineeService.getTraineesByFilter(pageable, dateOfBirth, address);
-        return ResponseEntity.ok(page);
+    public Page<TraineeDTO> getAll(Pageable pageable,
+                                   @RequestParam(required = false) Date dateOfBirth,
+                                   @RequestParam(required = false) String address) {
+        return traineeService.getByFilter(pageable, dateOfBirth, address);
     }
 }
 

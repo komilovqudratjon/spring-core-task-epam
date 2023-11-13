@@ -1,6 +1,9 @@
 package com.epam.upskill.springcore.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -23,7 +26,7 @@ public class Specialization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "specialization_name", nullable = false)
+    @Column(name = "specialization_name", nullable = false, unique = true)
     private String specializationName;
 
     // There should be a definition for how this entity relates to others,

@@ -1,13 +1,10 @@
 package com.epam.upskill.springcore.service.db.common;
 
 import com.epam.upskill.springcore.model.Training;
-import com.epam.upskill.springcore.repository.TrainingRepository;
+import com.epam.upskill.springcore.repository.TrainingHibernate;
 import com.epam.upskill.springcore.service.db.GenericDatabase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +26,7 @@ import java.util.Optional;
 public class TrainingDatabase implements GenericDatabase<Training, Long> {
 
     private final GenericDatabase<Training, Long> traineeDAO;
-    private final TrainingRepository traineeRepository;
+    private final TrainingHibernate trainingHibernate;
 
     /**
      * Saves a Training entity.
@@ -42,7 +39,7 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
     @Override
     public Training save(Training entity) {
         log.debug("Saving a Training entity");
-        Training savedEntity = traineeRepository.save(entity);
+        Training savedEntity = trainingHibernate.save(entity);
         traineeDAO.save(savedEntity);
         log.info("Training entity saved with ID: {}", savedEntity.getId());
         return savedEntity;
@@ -63,7 +60,7 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
         Optional<Training> foundTraining = traineeDAO.findById(id);
         if (foundTraining.isEmpty()) {
             log.debug("Training not found in DAO, searching in repository");
-            foundTraining = traineeRepository.findById(id);
+            foundTraining = trainingHibernate.findById(id);
             foundTraining.ifPresent(training -> {
                 log.info("Training found in repository, saving to DAO");
                 traineeDAO.save(training);
@@ -82,7 +79,7 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
     public void deleteById(Long id) {
         log.info("Deleting Training entity with ID: {}", id);
         traineeDAO.deleteById(id);
-        traineeRepository.deleteById(id);
+        trainingHibernate.deleteById(id);
     }
 
     /**
@@ -98,7 +95,7 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
         List<Training> allTrainings = traineeDAO.findAll();
         if (allTrainings.isEmpty()) {
             log.trace("No Training entities found in DAO, fetching from repository");
-            allTrainings = traineeRepository.findAll();
+            allTrainings = trainingHibernate.findAll();
             allTrainings.forEach(training -> {
                 log.trace("Saving Training entity back to DAO");
                 traineeDAO.save(training);
@@ -107,16 +104,4 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
         return allTrainings;
     }
 
-    /**
-     * Finds all Training entities matching a given specification and pageable details.
-     * This method leverages the JPA repository's capability to handle specifications and pagination.
-     *
-     * @param spec     The Specification to be used for filtering the Training entities.
-     * @param pageable The pageable details for pagination.
-     * @return A page of Training entities matching the criteria.
-     */
-    public Page<Training> findAll(Specification<Training> spec, Pageable pageable) {
-        log.debug("Finding all Training entities with specification");
-        return traineeRepository.findAll(spec, pageable);
-    }
 }

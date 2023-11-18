@@ -15,7 +15,7 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "specializationId")
+@Table(name = "specialization")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,9 +28,6 @@ public class Specialization {
 
     @Column(name = "specialization_name", nullable = false, unique = true)
     private String specializationName;
-
-    // There should be a definition for how this entity relates to others,
-    // but it's not fully clear from the diagram, assuming it's related to the Trainer entity.
 
 }
 

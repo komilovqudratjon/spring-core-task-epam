@@ -1,9 +1,9 @@
 package com.epam.upskill.springcore.service;
 
+import com.epam.upskill.springcore.model.dtos.Page;
 import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
 import com.epam.upskill.springcore.model.dtos.TraineeDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 
 import java.util.Date;
 
@@ -22,6 +22,6 @@ public interface TraineeService {
 
     TraineeDTO getById(Long id);
 
-    Page<TraineeDTO> getByFilter(Pageable pageable, Date dateOfBirth, String address);
+    Page<TraineeDTO> getByFilter(int page, int size, String name);
 }
 

@@ -3,12 +3,11 @@ package com.epam.upskill.springcore.service.impl;
 import com.epam.upskill.springcore.model.*;
 import com.epam.upskill.springcore.model.dtos.ResTrainingDTO;
 import com.epam.upskill.springcore.model.dtos.TrainingDTO;
-import com.epam.upskill.springcore.repository.TrainerRepository;
-import com.epam.upskill.springcore.repository.TrainingTypeRepository;
+import com.epam.upskill.springcore.repository.TrainerHibernate;
+import com.epam.upskill.springcore.repository.TrainingTypeHibernate;
 import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainingDatabase;
-import com.epam.upskill.springcore.service.db.specifications.TrainingSpecifications;
 import com.epam.upskill.springcore.service.impl.mapper.TrainingDTOMapper;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
@@ -18,8 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
@@ -43,7 +40,7 @@ class TrainingServiceImplTest {
 
 
     @Mock
-    private TrainerRepository trainerRepositoryMock; // Mock for the TrainerRepository
+    private TrainerHibernate trainerHibernateMock; // Mock for the TrainerHibernate
 
 
     @InjectMocks
@@ -61,7 +58,7 @@ class TrainingServiceImplTest {
     private TraineeDatabase traineeRepository;
 
     @Mock
-    private TrainingTypeRepository trainingTypeRepository;
+    private TrainingTypeHibernate trainingTypeHibernate;
 
 
     // Sample entities for use in tests
@@ -112,7 +109,7 @@ class TrainingServiceImplTest {
         ResTrainingDTO resTrainingDTO = new ResTrainingDTO(training.getId(), training.getTrainer().getId(), training.getTrainee().getId(), training.getTrainingName(), training.getTrainingType().getId(), training.getTrainingDate(), training.getTrainingDuration());
         when(trainerRepository.findById(any())).thenReturn(Optional.of(training.getTrainer()));
         when(traineeRepository.findById(any())).thenReturn(Optional.of(training.getTrainee()));
-        when(trainingTypeRepository.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
+        when(trainingTypeHibernate.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
         when(trainingRepository.save(any())).thenReturn(training);
         when(trainingDTOMapper.apply(any())).thenReturn(trainingDTO);
 
@@ -143,7 +140,7 @@ class TrainingServiceImplTest {
         ResTrainingDTO resTrainingDTO = new ResTrainingDTO(training.getId(), training.getTrainer().getId(), training.getTrainee().getId(), training.getTrainingName(), training.getTrainingType().getId(), training.getTrainingDate(), training.getTrainingDuration());
         when(trainerRepository.findById(any())).thenReturn(Optional.of(training.getTrainer()));
         when(traineeRepository.findById(any())).thenReturn(Optional.of(training.getTrainee()));
-        when(trainingTypeRepository.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
+        when(trainingTypeHibernate.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
         when(trainingRepository.save(any())).thenThrow(new RuntimeException("Unexpected error"));
 
         // When & Then
@@ -182,31 +179,6 @@ class TrainingServiceImplTest {
         assertEquals(trainingDTO, result.get(0));
     }
 
-
-    @Test
-    void getTrainingsByFilter() {
-        // Create a mock Pageable and TrainingSpecifications
-        Pageable pageableMock = mock(Pageable.class);
-        TrainingSpecifications trainingSpecificationsMock = mock(TrainingSpecifications.class);
-
-        // Create a mock Page<Training> to be returned by the repository
-        Page<Training> trainingPageMock = mock(Page.class);
-        when(trainingRepository.findAll(trainingSpecificationsMock, pageableMock)).thenReturn(trainingPageMock);
-
-        // Create a mock Page<TrainingDTO> which we will assert
-        Page<TrainingDTO> trainingDTOPageMock = mock(Page.class);
-        when(trainingPageMock.map(trainingDTOMapper)).thenReturn(trainingDTOPageMock);
-
-        // Call the method to test
-        Page<TrainingDTO> result = trainingService.getByFilter(pageableMock, trainingSpecificationsMock);
-
-        // Verify the interactions
-        verify(trainingRepository).findAll(trainingSpecificationsMock, pageableMock);
-        verify(trainingPageMock).map(trainingDTOMapper);
-
-        // Assert the result
-        assertEquals(trainingDTOPageMock, result);
-    }
 
 }
 

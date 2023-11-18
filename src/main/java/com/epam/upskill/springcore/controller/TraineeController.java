@@ -1,16 +1,14 @@
 package com.epam.upskill.springcore.controller;
 
+import com.epam.upskill.springcore.model.dtos.Page;
 import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
 import com.epam.upskill.springcore.model.dtos.TraineeDTO;
 import com.epam.upskill.springcore.service.TraineeService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 
 /**
  * @description: Controller class for managing Trainee entities.
@@ -64,17 +62,12 @@ public class TraineeController {
     /**
      * Get all trainees with optional filtering by date of birth and address.
      *
-     * @param pageable    pagination information.
-     * @param dateOfBirth optional filter for date of birth.
-     * @param address     optional filter for address.
      * @return a page of trainees.
      */
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Page<TraineeDTO> getAll(Pageable pageable,
-                                   @RequestParam(required = false) Date dateOfBirth,
-                                   @RequestParam(required = false) String address) {
-        return traineeService.getByFilter(pageable, dateOfBirth, address);
+    public Page<TraineeDTO> getAll(@PathVariable int page, @PathVariable int size, @PathVariable String name) {
+        return traineeService.getByFilter(page, size, name);
     }
 }
 

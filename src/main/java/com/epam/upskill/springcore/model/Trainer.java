@@ -25,11 +25,11 @@ public class Trainer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "specialization_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "specialization_id", nullable = false)
     private Specialization specialization;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 }

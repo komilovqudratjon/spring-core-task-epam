@@ -1,9 +1,9 @@
 package com.epam.upskill.springcore.component;
 
 import com.epam.upskill.springcore.model.*;
-import com.epam.upskill.springcore.repository.SpecializationRepository;
-import com.epam.upskill.springcore.repository.TrainingTypeRepository;
-import com.epam.upskill.springcore.repository.UserRepository;
+import com.epam.upskill.springcore.repository.SpecializationHibernate;
+import com.epam.upskill.springcore.repository.TrainingTypeHibernate;
+import com.epam.upskill.springcore.repository.UserHibernate;
 import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainingDatabase;
@@ -30,9 +30,9 @@ public class DataLoader implements CommandLineRunner {
     private final TraineeDatabase traineeRepository;
     private final TrainerDatabase trainerRepository;
     private final TrainingDatabase trainingRepository;
-    private final TrainingTypeRepository trainingTypeRepository;
-    private final SpecializationRepository specializationRepository;
-    private final UserRepository userRepository;
+    private final TrainingTypeHibernate trainingTypeHibernate;
+    private final SpecializationHibernate specializationHibernate;
+    private final UserHibernate userHibernate;
 
     public final Lorem lorem = LoremIpsum.getInstance();
 
@@ -58,7 +58,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the User to the repository (assuming there is a userRepository)
             try {
-                user = userRepository.save(user);
+                user = userHibernate.save(user);
             } catch (Exception ignored) {
             }
 
@@ -82,7 +82,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the Specialization to the repository (assuming there is a specializationRepository)
             try {
-                specializationRepository.save(specialization);
+                specializationHibernate.save(specialization);
             } catch (Exception ignored) {
             }
 
@@ -105,7 +105,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the TrainingType to the repository (assuming there is a trainingTypeRepository)
             try {
-                trainingTypeRepository.save(trainingType);
+                trainingTypeHibernate.save(trainingType);
             } catch (Exception ignored) {
             }
 

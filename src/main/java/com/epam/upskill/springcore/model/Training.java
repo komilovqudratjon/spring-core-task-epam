@@ -25,18 +25,18 @@ public class Training {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "trainee_id", nullable = false)
     private Trainee trainee;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "trainer_id", nullable = false)
     private Trainer trainer;
 
     @Column(name = "training_name", nullable = false)
     private String trainingName;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "training_type_id", nullable = false)
     private TrainingType trainingType;
 

@@ -7,7 +7,7 @@ import com.epam.upskill.springcore.model.dtos.ResTrainerDTO;
 import com.epam.upskill.springcore.model.dtos.SpecializationDTO;
 import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 import com.epam.upskill.springcore.model.dtos.UserDTO;
-import com.epam.upskill.springcore.repository.SpecializationRepository;
+import com.epam.upskill.springcore.repository.SpecializationHibernate;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TrainerDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ class TrainerServiceImplTest {
     private TrainerDTOMapper trainerDTOMapper;
 
     @Mock
-    private SpecializationRepository specializationRepository;
+    private SpecializationHibernate specializationHibernate;
 
     @InjectMocks
     private TrainerServiceImpl trainerService;
@@ -69,7 +69,7 @@ class TrainerServiceImplTest {
     void createOrUpdateTrainer_Success() {
         // Given
         ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
-        when(specializationRepository.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
+        when(specializationHibernate.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
         when(trainerRepository.findById(any())).thenReturn(Optional.of(trainer));
         when(trainerRepository.save(any())).thenReturn(trainer);
         when(trainerDTOMapper.apply(any())).thenReturn(trainerDTO);
@@ -87,7 +87,7 @@ class TrainerServiceImplTest {
     void createOrUpdateTrainer_SpecializationNotFound() {
         // Given
         ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
-        when(specializationRepository.findById(any())).thenReturn(Optional.empty());
+        when(specializationHibernate.findById(any())).thenReturn(Optional.empty());
 
         // When & Then
         assertThrows(EntityNotFoundException.class, () -> trainerService.createOrUpdate(resTrainerDTO));
@@ -97,7 +97,7 @@ class TrainerServiceImplTest {
     void createOrUpdateTrainer_UserNotFound() {
         // Given
         ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
-        when(specializationRepository.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
+        when(specializationHibernate.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
         when(trainerRepository.findById(any())).thenReturn(Optional.empty());
 
         // When & Then
@@ -108,7 +108,7 @@ class TrainerServiceImplTest {
     void createOrUpdateTrainer_Exception() {
         // Given
         ResTrainerDTO resTrainerDTO = new ResTrainerDTO(trainer.getId(), trainer.getSpecialization().getId(), trainer.getUser().getId());
-        when(specializationRepository.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
+        when(specializationHibernate.findById(any())).thenReturn(Optional.of(trainer.getSpecialization()));
         when(trainerRepository.findById(any())).thenReturn(Optional.of(trainer));
         when(trainerRepository.save(any())).thenThrow(new RuntimeException("Unexpected error"));
 

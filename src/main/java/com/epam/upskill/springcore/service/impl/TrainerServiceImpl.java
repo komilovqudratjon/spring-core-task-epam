@@ -1,9 +1,10 @@
 package com.epam.upskill.springcore.service.impl;
 
+import com.epam.upskill.springcore.model.Specialization;
 import com.epam.upskill.springcore.model.dtos.ResTrainerDTO;
 import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 import com.epam.upskill.springcore.model.Trainer;
-import com.epam.upskill.springcore.repository.SpecializationRepository;
+import com.epam.upskill.springcore.repository.CrudRepository;
 import com.epam.upskill.springcore.service.TrainerService;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TrainerDTOMapper;
@@ -29,7 +30,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     private final TrainerDatabase trainerRepository;
     private final TrainerDTOMapper trainerDTOMapper;
-    private final SpecializationRepository specializationRepository;
+    private final CrudRepository<Specialization, Long> specializationHibernate;
 
     /**
      * Creates or updates a Trainer in the database.
@@ -43,7 +44,7 @@ public class TrainerServiceImpl implements TrainerService {
         try {
             Trainer trainer1 = new Trainer();
             trainer1.setId(trainer.id());
-            trainer1.setSpecialization(specializationRepository.findById(trainer.specializationId()).orElseThrow(() -> {
+            trainer1.setSpecialization(specializationHibernate.findById(trainer.specializationId()).orElseThrow(() -> {
                 log.error("Specialization not found by id: {}", trainer.specializationId());
                 return new EntityNotFoundException("Specialization not found by id: " + trainer.specializationId());
             }));

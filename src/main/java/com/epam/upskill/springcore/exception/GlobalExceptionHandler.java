@@ -2,11 +2,8 @@ package com.epam.upskill.springcore.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.TransientPropertyValueException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -56,7 +53,7 @@ public class GlobalExceptionHandler {
      * @param e the caught RuntimeException.
      * @return a ResponseEntity with error details and HTTP status code.
      */
-    @ExceptionHandler({JpaObjectRetrievalFailureException.class, DataIntegrityViolationException.class, InvalidDataAccessApiUsageException.class, TransientPropertyValueException.class})
+    @ExceptionHandler(TransientPropertyValueException.class)
     public ResponseEntity<ErrorResponse> handleJpaAndDataIntegrityExceptions(RuntimeException e) {
         log.error("Exception occurred: ", e);
         String errorMessage = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();

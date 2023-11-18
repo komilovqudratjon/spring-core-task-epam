@@ -1,7 +1,7 @@
 package com.epam.upskill.springcore.service.db.common;
 
 import com.epam.upskill.springcore.model.Trainer;
-import com.epam.upskill.springcore.repository.TrainerRepository;
+import com.epam.upskill.springcore.repository.TrainerHibernate;
 import com.epam.upskill.springcore.service.db.GenericDatabase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
 
     private final GenericDatabase<Trainer, Long> traineeDAO;
-    private final TrainerRepository traineeRepository;
+    private final TrainerHibernate trainerHibernate;
 
     /**
      * Saves a Trainer entity.
@@ -36,7 +36,7 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
     @Override
     public Trainer save(Trainer entity) {
         log.trace("Entering save method with entity: {}", entity);
-        Trainer saved = traineeRepository.save(entity);
+        Trainer saved = trainerHibernate.save(entity);
         log.debug("Trainer saved to PostgreSQL: {}", saved);
         traineeDAO.save(saved);
         log.trace("Exiting save method");
@@ -59,7 +59,7 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
         log.debug("Trainer search in local hash map for ID {}: {}", id, found);
 
         if (found.isEmpty()) {
-            found = traineeRepository.findById(id);
+            found = trainerHibernate.findById(id);
             log.debug("Trainer search in PostgreSQL for ID {}: {}", id, found);
 
             found.ifPresent(trainer -> {
@@ -80,7 +80,7 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
      */
     @Override
     public void deleteById(Long id) {
-        traineeRepository.deleteById(id);
+        trainerHibernate.deleteById(id);
         log.debug("Trainer deleted from PostgreSQL with ID: {}", id);
         traineeDAO.deleteById(id);
         log.debug("Trainer deleted from local hash map with ID: {}", id);
@@ -99,7 +99,7 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
 
         if (all.isEmpty()) {
             log.debug("No Trainers found in local hash map, checking PostgreSQL");
-            all = traineeRepository.findAll();
+            all = trainerHibernate.findAll();
 
             for (Trainer trainer : all) {
                 traineeDAO.save(trainer);

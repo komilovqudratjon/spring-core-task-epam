@@ -31,9 +31,7 @@ public class Trainee {
     @Column(name = "address")
     private String address;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
-
-
 }

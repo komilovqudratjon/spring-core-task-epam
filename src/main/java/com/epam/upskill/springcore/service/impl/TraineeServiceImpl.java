@@ -1,21 +1,20 @@
 package com.epam.upskill.springcore.service.impl;
 
+import com.epam.upskill.springcore.model.dtos.Page;
 import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
 import com.epam.upskill.springcore.model.dtos.TraineeDTO;
 import com.epam.upskill.springcore.model.Trainee;
-import com.epam.upskill.springcore.repository.UserRepository;
+import com.epam.upskill.springcore.repository.UserHibernate;
 import com.epam.upskill.springcore.service.TraineeService;
-import com.epam.upskill.springcore.service.db.specifications.TraineeSpecifications;
 import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TraineeDTOMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,7 +32,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     private final TraineeDatabase traineeRepository;
 
-    private final UserRepository userRepository;
+    private final UserHibernate userHibernate;
 
     private final TraineeDTOMapper traineeDTOMapper;
 
@@ -51,7 +50,7 @@ public class TraineeServiceImpl implements TraineeService {
         trainee1.setId(trainee.id());
         trainee1.setDateOfBirth(trainee.dateOfBirth());
         trainee1.setAddress(trainee.address());
-        trainee1.setUser(userRepository.findById(trainee.userId()).orElseThrow(() -> {
+        trainee1.setUser(userHibernate.findById(trainee.userId()).orElseThrow(() -> {
             log.error("User not found by id: {}", trainee.userId());
             return new EntityNotFoundException("User not found by id: " + trainee.userId());
         }));
@@ -96,11 +95,16 @@ public class TraineeServiceImpl implements TraineeService {
      * @return a list of TraineeDTOs
      */
     @Override
-    public Page<TraineeDTO> getByFilter(Pageable pageable, Date dateOfBirth, String address) {
+    public Page<TraineeDTO> getByFilter(int page, int size, String name) {
         log.debug("Retrieving all trainees");
-        Page<Trainee> trainees = traineeRepository.findAll(new TraineeSpecifications(dateOfBirth, address), pageable);
+        Page<Trainee> trainees = traineeRepository.findAll(page, size, name);
         log.debug("Retrieved all trainees: {}", trainees);
-        return trainees.map(traineeDTOMapper);
+        List<TraineeDTO> result= trainees.getContent()
+                .stream()
+                .map(traineeDTOMapper)
+                .toList();
+        return new Page<>(result, trainees.getNumber(), trainees.getSize(), trainees.getTotalElements());
+
     }
 
 }

@@ -3,7 +3,7 @@ package com.epam.upskill.springcore.service.impl;
 import com.epam.upskill.springcore.model.Users;
 import com.epam.upskill.springcore.model.dtos.RestUserDTO;
 import com.epam.upskill.springcore.model.dtos.UserDTO;
-import com.epam.upskill.springcore.repository.UserRepository;
+import com.epam.upskill.springcore.repository.UserHibernate;
 import com.epam.upskill.springcore.service.UserService;
 import com.epam.upskill.springcore.service.impl.mapper.UserDTOMapper;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserHibernate userHibernate;
     private final UserDTOMapper userDTOMapper;
 
 
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
         String password = generatePassword();
         user.setPassword(password);
         user.setIsActive(true);
-        Users save = userRepository.save(user);
+        Users save = userHibernate.save(user);
         return userDTOMapper.apply(save);
     }
 
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         String username = baseUsername;
         int counter = 1;
 
-        while (userRepository.existsByUsername(username)) {
+        while (userHibernate.existsByUsername(username)) {
             username = baseUsername + counter;
             counter++;
         }

@@ -59,6 +59,10 @@ public class Storage {
     @PostConstruct
     public void init() {
         log.info("Initializing Storage");
+        creteFile(trainersFilePath);
+        creteFile(traineesFilePath);
+        creteFile(trainingsFilePath);
+
         try {
             loadTrainers();
             log.info("Trainers loaded successfully.");
@@ -76,6 +80,21 @@ public class Storage {
             log.info("Trainings loaded successfully.");
         } catch (IOException e) {
             log.error("Error loading trainings: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Creates a file if it doesn't exist.
+     * @param filePath the path of the file to be created
+     */
+    public void creteFile(String filePath) {
+        if (Files.notExists(Paths.get(filePath))) {
+            // crete file
+            try {
+                Files.createFile(Paths.get(filePath));
+            } catch (IOException e) {
+                log.error("Error creating file: {}", e.getMessage(), e);
+            }
         }
     }
 

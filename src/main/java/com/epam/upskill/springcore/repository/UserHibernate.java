@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 public class UserHibernate extends CrudRepository<Users, Long> {
 
 
-    public UserHibernate(Class<Users> entityType) {
-        super( entityType);
+    public UserHibernate() {
+        super(Users.class);
     }
 
     public boolean existsByUsername(String username) {

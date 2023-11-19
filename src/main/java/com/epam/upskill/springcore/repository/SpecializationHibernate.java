@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SpecializationHibernate extends CrudRepository<Specialization, Long> {
-    public SpecializationHibernate(Class<Specialization> entityType) {
-        super( entityType);
+    public SpecializationHibernate() {
+        super(Specialization.class);
     }
 
 }

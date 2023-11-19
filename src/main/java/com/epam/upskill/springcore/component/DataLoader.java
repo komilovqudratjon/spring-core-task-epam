@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 
 /**
@@ -46,7 +47,8 @@ public class DataLoader implements CommandLineRunner {
 
     }
 
-    private void generateData() {
+    @Transactional
+    public void generateData() {
         for (long i = 0; i < 10; i++) {
             // Create a new random User
             Users user = new Users();
@@ -71,7 +73,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the Trainee to the repository (assuming there is a traineeRepository)
             try {
-                traineeRepository.save(trainee);
+                trainee = traineeRepository.save(trainee);
             } catch (Exception ignored) {
             }
 
@@ -82,7 +84,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the Specialization to the repository (assuming there is a specializationRepository)
             try {
-                specializationHibernate.save(specialization);
+                specialization = specializationHibernate.save(specialization);
             } catch (Exception ignored) {
             }
 
@@ -94,7 +96,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the Trainer to the repository (assuming there is a trainerRepository)
             try {
-                trainerRepository.save(trainer);
+                trainer = trainerRepository.save(trainer);
             } catch (Exception ignored) {
             }
 
@@ -105,7 +107,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the TrainingType to the repository (assuming there is a trainingTypeRepository)
             try {
-                trainingTypeHibernate.save(trainingType);
+                trainingType = trainingTypeHibernate.save(trainingType);
             } catch (Exception ignored) {
             }
 
@@ -121,8 +123,9 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the Training to the repository (assuming there is a trainingRepository)
             try {
-                trainingRepository.save(training);
-            } catch (Exception ignored) {
+                training = trainingRepository.save(training);
+            } catch (Exception e) {
+                log.error("Error saving training: {}", e.getMessage());
             }
         }
     }

@@ -13,10 +13,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TraineeHibernate extends CrudRepository<Trainee, Long> {
-    
-    
-    public TraineeHibernate(Class<Trainee> entityType) {
-        super( entityType);
+    public TraineeHibernate() {
+        super(Trainee.class);
     }
 
 }

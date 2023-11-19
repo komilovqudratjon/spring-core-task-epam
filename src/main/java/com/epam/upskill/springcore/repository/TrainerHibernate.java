@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TrainerHibernate extends CrudRepository<Trainer, Long> {
 
-    public TrainerHibernate(Class<Trainer> entityType) {
-        super( entityType);
+    public TrainerHibernate() {
+        super(Trainer.class);
     }
 
 

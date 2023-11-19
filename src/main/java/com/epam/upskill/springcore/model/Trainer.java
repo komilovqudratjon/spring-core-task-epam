@@ -26,7 +26,6 @@ public class Trainer {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "specialization_id", nullable = false)
     private Specialization specialization;
 
     @ManyToOne(cascade = CascadeType.ALL)

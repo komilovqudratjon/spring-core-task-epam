@@ -17,10 +17,9 @@ import org.springframework.stereotype.Service;
 
 public class TrainingTypeHibernate extends CrudRepository<TrainingType, Long> {
 
-
-    public TrainingTypeHibernate(Class<TrainingType> entityType) {
-        super( entityType);
-    }
+        public TrainingTypeHibernate() {
+            super(TrainingType.class);
+        }
 
 
 }

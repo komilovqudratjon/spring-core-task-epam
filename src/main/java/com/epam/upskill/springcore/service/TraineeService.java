@@ -23,5 +23,11 @@ public interface TraineeService {
     TraineeDTO getById(Long id);
 
     Page<TraineeDTO> getByFilter(int page, int size, String name);
+
+    TraineeDTO getByUsername(String username);
+
+    void deleteByUsername(String username);
+
+    void addTrainers(Long traineeId, Long trainerId);
 }
 

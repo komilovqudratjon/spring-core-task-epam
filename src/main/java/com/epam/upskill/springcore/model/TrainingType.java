@@ -1,8 +1,13 @@
 package com.epam.upskill.springcore.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @description: Entity class for TrainingType.
@@ -17,7 +22,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TrainingType {
+public class TrainingType extends AbsEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +30,10 @@ public class TrainingType {
 
     @Column(name = "training_type_name", nullable = false, unique = true)
     private String trainingTypeName;
+
+    @OneToMany(mappedBy = "trainingType")
+    private Set<Training> trainings = new HashSet<>();
+
 
 }
 

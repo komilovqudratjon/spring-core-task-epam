@@ -13,13 +13,13 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
+@Table(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Users {
+public class Users extends AbsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,4 +40,9 @@ public class Users {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    private Trainee trainee;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    private Trainer trainer;
 }

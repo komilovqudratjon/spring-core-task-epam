@@ -11,15 +11,19 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "trainee",uniqueConstraints = {@UniqueConstraint(columnNames = {"address","user_id","date_of_birth"})})
+@Table(name = "trainee", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id"}),
+})
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Trainee {
+public class Trainee extends AbsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +35,13 @@ public class Trainee {
     @Column(name = "address")
     private String address;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+
+    @ManyToMany(mappedBy = "trainees", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<Trainer> trainers = new HashSet<>();
+
+    @Column(name = "is_active")
+    private Boolean isActive=true;
 }

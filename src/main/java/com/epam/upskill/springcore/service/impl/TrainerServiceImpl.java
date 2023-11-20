@@ -1,10 +1,10 @@
 package com.epam.upskill.springcore.service.impl;
 
-import com.epam.upskill.springcore.model.Specialization;
+import com.epam.upskill.springcore.model.Trainer;
+import com.epam.upskill.springcore.model.dtos.Page;
 import com.epam.upskill.springcore.model.dtos.ResTrainerDTO;
 import com.epam.upskill.springcore.model.dtos.TrainerDTO;
-import com.epam.upskill.springcore.model.Trainer;
-import com.epam.upskill.springcore.repository.CrudRepository;
+import com.epam.upskill.springcore.repository.SpecializationHibernate;
 import com.epam.upskill.springcore.service.TrainerService;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TrainerDTOMapper;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @description: Service class for managing Trainer entities.
@@ -30,7 +31,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     private final TrainerDatabase trainerRepository;
     private final TrainerDTOMapper trainerDTOMapper;
-    private final CrudRepository<Specialization, Long> specializationHibernate;
+    private final SpecializationHibernate specializationHibernate;
 
     /**
      * Creates or updates a Trainer in the database.
@@ -70,7 +71,7 @@ public class TrainerServiceImpl implements TrainerService {
      * @throws EntityNotFoundException if the trainer is not found
      */
     @Override
-    public TrainerDTO getTrainerById(Long id) {
+    public TrainerDTO getById(Long id) {
         log.debug("Request to retrieve trainer by id: {}", id);
         return trainerDTOMapper.apply(trainerRepository.findById(id).orElseThrow(() -> {
             log.error("Trainer not found for id: {}", id);
@@ -89,5 +90,39 @@ public class TrainerServiceImpl implements TrainerService {
         List<TrainerDTO> list = trainerRepository.findAll().stream().map(trainerDTOMapper).toList();
         log.info("All trainers retrieved successfully");
         return list;
+    }
+
+    /**
+     * Retrieves a Trainer by its username.
+     *
+     * @param username the username of the trainer
+     * @return the TrainerDTO
+     * @throws EntityNotFoundException if the trainer is not found
+     */
+    @Override
+    public TrainerDTO getByUsername(String username) {
+        log.debug("Request to retrieve trainer by username: {}", username);
+        return trainerDTOMapper.apply(trainerRepository.findByUserUsername(username).orElseThrow(() -> {
+            log.error("Trainer not found for username: {}", username);
+            return new EntityNotFoundException("Trainer not found for username: " + username);
+        }));
+    }
+
+    @Override
+    public Page<TrainerDTO> getByFilter(Integer page, Integer size, String search) {
+        log.debug("Retrieving all trainees");
+        Page<Trainer> trainees = trainerRepository.getByFilter(page, size, search);
+        log.debug("Retrieved all trainees: {}", trainees);
+        List<TrainerDTO> collect = trainees.getContent().stream().map(trainerDTOMapper).collect(Collectors.toList());
+        return new Page<>(collect, trainees.getNumber(), trainees.getSize(), trainees.getTotalElements());
+    }
+
+    @Override
+    public Page<TrainerDTO> getNotAssignedTrainers(Long traineeId) {
+        log.debug("Retrieving all trainees");
+        Page<Trainer> trainees = trainerRepository.getNotAssignedTrainers(traineeId);
+        log.debug("Retrieved all trainees: {}", trainees);
+        List<TrainerDTO> collect = trainees.getContent().stream().map(trainerDTOMapper).collect(Collectors.toList());
+        return new Page<>(collect, trainees.getNumber(), trainees.getSize(), trainees.getTotalElements());
     }
 }

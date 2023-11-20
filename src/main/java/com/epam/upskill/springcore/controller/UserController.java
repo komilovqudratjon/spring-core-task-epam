@@ -5,9 +5,7 @@ import com.epam.upskill.springcore.model.dtos.UserDTO;
 import com.epam.upskill.springcore.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @description: TODO
@@ -28,11 +26,16 @@ public class UserController {
      * @param restUserDTO The user data transfer object.
      * @return ResponseEntity containing the created or updated user.
      */
-    @RequestMapping("/register")
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO register(RestUserDTO restUserDTO) {
+    public UserDTO register(@RequestBody RestUserDTO restUserDTO) {
         return userService.register(restUserDTO);
     }
+
+    /**
+     * user password change.
+     *
+     */
 
 
 }

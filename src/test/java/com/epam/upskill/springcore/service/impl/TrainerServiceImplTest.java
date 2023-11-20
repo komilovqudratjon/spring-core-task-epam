@@ -56,13 +56,13 @@ class TrainerServiceImplTest {
 
         // Create static test data for Users and Specialization
         Users user = new Users(1L, "John", "Doe", "johndoe", "password123", true);
-        Specialization specialization = new Specialization(1L, "Java Developer");
+        Specialization specialization = new Specialization(1L, "Java Developer",true);
 
         // Now, create a new Trainer with the User and Specialization
-        trainer = new Trainer(1L, specialization, user);
+        trainer = new Trainer(1L, specialization, user, true);
 
         // Prepare the TrainerDTO based on the Trainer data
-        trainerDTO = new TrainerDTO(trainer.getId(), new SpecializationDTO(specialization.getId(), specialization.getSpecializationName()), new UserDTO(user.getId(), user.getUsername(), user.getPassword(), user.getFirstName(), user.getIsActive()));
+        trainerDTO = new TrainerDTO(trainer.getId(), new SpecializationDTO(specialization.getId(), specialization.getSpecializationName()), new UserDTO(user.getId(), user.getUsername(), user.getPassword(), user.getFirstName(), user.getPassword(),true));
     }
 
     @Test
@@ -120,7 +120,7 @@ class TrainerServiceImplTest {
         when(trainerRepository.findById(anyLong())).thenReturn(Optional.of(trainer));
         when(trainerDTOMapper.apply(any(Trainer.class))).thenReturn(trainerDTO);
 
-        TrainerDTO result = trainerService.getTrainerById(1L);
+        TrainerDTO result = trainerService.getById(1L);
 
         assertNotNull(result);
         assertEquals(trainerDTO, result);
@@ -133,7 +133,7 @@ class TrainerServiceImplTest {
     void getTrainerById_notFound() {
         when(trainerRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> trainerService.getTrainerById(1L));
+        assertThrows(RuntimeException.class, () -> trainerService.getById(1L));
 
         verify(trainerRepository).findById(1L);
         verify(trainerDTOMapper, never()).apply(any(Trainer.class));

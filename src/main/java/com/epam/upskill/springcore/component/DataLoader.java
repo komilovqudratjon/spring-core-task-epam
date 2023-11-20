@@ -49,7 +49,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Transactional
     public void generateData() {
-        for (long i = 0; i < 10; i++) {
+        for (long i = 0; i < 100; i++) {
             // Create a new random User
             Users user = new Users();
             user.setFirstName(lorem.getName());        // Random first name

@@ -3,6 +3,8 @@ package com.epam.upskill.springcore.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -19,16 +21,28 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Trainer {
+public class Trainer extends AbsEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "specialization_id", nullable = false)
     private Specialization specialization;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "trainer_trainee",
+            joinColumns = { @JoinColumn(name = "trainer_id") },
+            inverseJoinColumns = { @JoinColumn(name = "trainee_id") }
+    )
+    private Set<Trainee> trainees = new HashSet<>();
+
+    @Column(name = "is_active")
+    private Boolean isActive=true;
 }

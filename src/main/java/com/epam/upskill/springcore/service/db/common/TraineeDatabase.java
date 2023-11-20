@@ -100,9 +100,35 @@ public class TraineeDatabase implements GenericDatabase<Trainee, Long> {
      *
      * @return A page of trainees.
      */
-    public Page<Trainee> findAll(int page, int size, String name) {
+    public Page<Trainee> getByFilter(int page, int size, String search) {
         log.info("Fetching all trainees");
-        return null;
+        return traineeHibernate.getByFilter(page, size, search);
+
     }
 
+    /**
+     * Finds a trainee by username.
+     *
+     * @param username The username of the trainee.
+     * @return Optional containing the trainee if found, otherwise empty.
+     */
+    public Optional<Trainee> findByUsername(String username) {
+        // only use traineeHibernate
+        log.trace("Searching for trainee with username: {}", username);
+        Optional<Trainee> byUsername = traineeHibernate.findByUsername(username);
+        if (byUsername.isEmpty()) {
+            log.warn("Trainee not found with username: {}", username);
+            return Optional.empty();
+        }
+        return byUsername;
+    }
+
+    public void deleteByUsername(String username) {
+        log.info("Deleting trainee with username: {}", username);
+        traineeHibernate.deleteByUsername(username);
+    }
+
+    public void addTrainers(Long traineeId, Long trainerId) {
+        traineeHibernate.addTrainers(traineeId, trainerId);
+    }
 }

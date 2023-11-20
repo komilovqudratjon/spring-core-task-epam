@@ -7,7 +7,7 @@ package com.epam.upskill.springcore.model.dtos;
  * @time: 3:00 PM 28 $
  * @author: Qudratjon Komilov
  */
-public record UserDTO(Long id, String firstName, String lastName, String username, Boolean isActive) {
+public record UserDTO(Long id, String firstName, String lastName, String username,String password, Boolean isActive) {
 }
 
 

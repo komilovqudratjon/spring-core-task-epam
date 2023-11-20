@@ -13,13 +13,13 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "training", uniqueConstraints = {@UniqueConstraint(columnNames = {"trainee_id", "trainer_id", "training_name", "training_type_id", "training_date"})})
+@Table(name = "training", uniqueConstraints = {@UniqueConstraint(columnNames = {"trainee_id", "trainer_id", "training_name", "training_type_id", "training_date","training_duration"})})
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Training {
+public class Training extends AbsEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class Training {
     @Column(name = "training_name", nullable = false)
     private String trainingName;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "training_type_id", nullable = false)
     private TrainingType trainingType;
 
@@ -45,5 +45,6 @@ public class Training {
 
     @Column(name = "training_duration", nullable = false)
     private Integer trainingDuration;
+
 
 }

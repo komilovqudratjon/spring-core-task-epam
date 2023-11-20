@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
      * @return The generated username.
      */
     private String generateUsername(String firstName, String lastName) {
-        String baseUsername = firstName + "." + lastName;
+        String baseUsername = firstName.toLowerCase() + "." + lastName.toLowerCase();
         String username = baseUsername;
         int counter = 1;
 
@@ -72,6 +72,6 @@ public class UserServiceImpl implements UserService {
      * @return The generated password.
      */
     private String generatePassword() {
-        return RandomStringUtils.random(10, false, false);
+        return RandomStringUtils.random(10, true, false);
     }
 }

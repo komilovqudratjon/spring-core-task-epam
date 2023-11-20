@@ -1,21 +1,24 @@
 package com.epam.upskill.springcore.service.impl;
 
+import com.epam.upskill.springcore.model.Trainee;
+import com.epam.upskill.springcore.model.Trainer;
 import com.epam.upskill.springcore.model.dtos.Page;
 import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
 import com.epam.upskill.springcore.model.dtos.TraineeDTO;
-import com.epam.upskill.springcore.model.Trainee;
 import com.epam.upskill.springcore.repository.UserHibernate;
 import com.epam.upskill.springcore.service.TraineeService;
 import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
+import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TraineeDTOMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @description: Service class for managing Trainee entities.
@@ -95,16 +98,36 @@ public class TraineeServiceImpl implements TraineeService {
      * @return a list of TraineeDTOs
      */
     @Override
-    public Page<TraineeDTO> getByFilter(int page, int size, String name) {
+    public Page<TraineeDTO> getByFilter(int page, int size, String search) {
         log.debug("Retrieving all trainees");
-        Page<Trainee> trainees = traineeRepository.findAll(page, size, name);
+        Page<Trainee> trainees = traineeRepository.getByFilter(page, size, search);
         log.debug("Retrieved all trainees: {}", trainees);
-        List<TraineeDTO> result= trainees.getContent()
-                .stream()
-                .map(traineeDTOMapper)
-                .toList();
-        return new Page<>(result, trainees.getNumber(), trainees.getSize(), trainees.getTotalElements());
+        List<TraineeDTO> collect = trainees.getContent().stream().map(traineeDTOMapper).collect(Collectors.toList());
+        return new Page<>(collect, trainees.getNumber(), trainees.getSize(), trainees.getTotalElements());
 
+    }
+
+    @Override
+    public TraineeDTO getByUsername(String username) {
+        log.debug("Retrieving trainee by username: {}", username);
+        Optional<Trainee> byUsername = traineeRepository.findByUsername(username);
+        log.debug("Retrieved trainee by username: {}", byUsername);
+        return byUsername.map(traineeDTOMapper).orElseThrow(() -> {
+            log.error("Trainee not found by username: {}", username);
+            return new EntityNotFoundException("Trainee not found by username: " + username);
+        });
+    }
+
+    @Override
+    public void deleteByUsername(String username) {
+        log.debug("Deleting trainee by username: {}", username);
+        traineeRepository.deleteByUsername(username);
+        log.debug("Deleted trainee by username: {}", username);
+    }
+
+    @Override
+    public void addTrainers(Long traineeId, Long trainerId) {
+        traineeRepository.addTrainers(traineeId, trainerId);
     }
 
 }

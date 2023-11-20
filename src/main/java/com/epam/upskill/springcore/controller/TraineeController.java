@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 /**
  * @description: Controller class for managing Trainee entities.
@@ -48,6 +49,18 @@ public class TraineeController {
     }
 
     /**
+     * Delete a trainee by username.
+     *
+     * @param username the username of the trainee to delete.
+     * @return a response entity indicating the operation's success.
+     */
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/username/{username}")
+    public void deleteByUsername(@PathVariable String username) {
+        traineeService.deleteByUsername(username);
+    }
+
+    /**
      * Retrieve a trainee by ID.
      *
      * @param id the ID of the trainee.
@@ -66,8 +79,32 @@ public class TraineeController {
      */
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public Page<TraineeDTO> getAll(@PathVariable int page, @PathVariable int size, @PathVariable String name) {
-        return traineeService.getByFilter(page, size, name);
+    public Page<TraineeDTO> getByFilter(@RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page, @RequestParam(value = "size", defaultValue = "5") @Min(0) Integer size, @RequestParam(required = false, name = "search") String search) {
+        return traineeService.getByFilter(page, size, search);
+    }
+
+    /**
+     * Select Trainee profile by username.
+     *
+     * @param username The username of the trainer to retrieve.
+     * @return ResponseEntity containing the requested trainer.
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/username/{username}")
+    public TraineeDTO getByUsername(@PathVariable String username) {
+        return traineeService.getByUsername(username);
+    }
+
+    /**
+     *  Update Tranee's trainers list
+     *  @param traineeId The trainee id
+     *  @param trainerId The trainer id
+     *  @return ResponseEntity containing the requested trainers.
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/add-trainer/{traineeId}/{trainerId}")
+    public void addTrainers(@PathVariable Long traineeId, @PathVariable Long trainerId) {
+         traineeService.addTrainers(traineeId, trainerId);
     }
 }
 

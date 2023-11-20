@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @description: Entity class for Specialization.
@@ -15,12 +16,12 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "specialization")
+@Table(name = "specialization", uniqueConstraints = {@UniqueConstraint(columnNames = {"specialization_name"})})
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Specialization {
+public class Specialization extends AbsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +29,10 @@ public class Specialization {
 
     @Column(name = "specialization_name", nullable = false, unique = true)
     private String specializationName;
+
+    @OneToMany(mappedBy = "specialization")
+    private Set<Trainer> trainer;
+
 
 }
 

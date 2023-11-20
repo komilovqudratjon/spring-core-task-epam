@@ -1,6 +1,8 @@
 package com.epam.upskill.springcore.service.db.common;
 
 import com.epam.upskill.springcore.model.Trainer;
+import com.epam.upskill.springcore.model.dtos.Page;
+import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 import com.epam.upskill.springcore.repository.TrainerHibernate;
 import com.epam.upskill.springcore.service.db.GenericDatabase;
 import lombok.AllArgsConstructor;
@@ -21,7 +23,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
+public class TrainerDatabase  {
 
     private final GenericDatabase<Trainer, Long> traineeDAO;
     private final TrainerHibernate trainerHibernate;
@@ -33,7 +35,6 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
      * @param entity the Trainer entity to be saved
      * @return the saved Trainer entity
      */
-    @Override
     public Trainer save(Trainer entity) {
         log.trace("Entering save method with entity: {}", entity);
         Trainer saved = trainerHibernate.save(entity);
@@ -51,7 +52,6 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
      * @param id the ID of the Trainer
      * @return an Optional containing the found Trainer or empty if not found
      */
-    @Override
     public Optional<Trainer> findById(Long id) {
         log.trace("Entering findById method with ID: {}", id);
 
@@ -78,7 +78,6 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
      *
      * @param id the ID of the Trainer to be deleted
      */
-    @Override
     public void deleteById(Long id) {
         trainerHibernate.deleteById(id);
         log.debug("Trainer deleted from PostgreSQL with ID: {}", id);
@@ -92,7 +91,6 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
      *
      * @return a List of Trainer entities
      */
-    @Override
     public List<Trainer> findAll() {
         List<Trainer> all = traineeDAO.findAll();
         log.debug("Attempt to find all Trainers in local hash map");
@@ -107,5 +105,17 @@ public class TrainerDatabase implements GenericDatabase<Trainer, Long> {
             log.debug("Trainers from PostgreSQL saved to local hash map: {}", all);
         }
         return all;
+    }
+
+    public Optional<Trainer> findByUserUsername(String username) {
+        return trainerHibernate.findByUserUsername(username);
+    }
+
+    public Page<Trainer> getByFilter(Integer page, Integer size, String search) {
+        return trainerHibernate.getByFilter(page, size, search);
+    }
+
+    public Page<Trainer> getNotAssignedTrainers(Long traineeId) {
+        return trainerHibernate.getNotAssignedTrainers(traineeId);
     }
 }

@@ -1,15 +1,22 @@
 package com.epam.upskill.springcore.service.impl;
 
 import com.epam.upskill.springcore.model.Users;
+import com.epam.upskill.springcore.model.dtos.LoginDTO;
+import com.epam.upskill.springcore.model.dtos.RestToken;
 import com.epam.upskill.springcore.model.dtos.RestUserDTO;
 import com.epam.upskill.springcore.model.dtos.UserDTO;
 import com.epam.upskill.springcore.repository.UserHibernate;
+import com.epam.upskill.springcore.security.SecurityUtils;
 import com.epam.upskill.springcore.service.UserService;
 import com.epam.upskill.springcore.service.impl.mapper.UserDTOMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @description: Service class for managing Training entities.
@@ -25,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserHibernate userHibernate;
     private final UserDTOMapper userDTOMapper;
-
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Creates or updates a training.
@@ -41,10 +48,61 @@ public class UserServiceImpl implements UserService {
         String username = generateUsername(userDTO.firstName(), userDTO.lastName());
         user.setUsername(username);
         String password = generatePassword();
-        user.setPassword(password);
+        log.info("Generated password: {}", password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setIsActive(true);
         Users save = userHibernate.save(user);
-        return userDTOMapper.apply(save);
+        UserDTO apply = userDTOMapper.apply(save);
+        return apply;
+    }
+
+    @Override
+    public RestToken login(LoginDTO loginDTO) {
+        return null;
+    }
+
+    @Override
+    public UserDTO changePassword(LoginDTO loginDTO) {
+        String currentUserUsername = SecurityUtils.getCurrentUserUsername();
+        if (!Objects.equals(currentUserUsername, loginDTO.username())) {
+            // throw forbidden exception
+            throw new SecurityException("You are not allowed to change password for other users");
+        }
+        Optional<Users> byUsername = userHibernate.findByUsername(SecurityUtils.getCurrentUserUsername());
+        if (byUsername.isEmpty()) {
+            throw new EntityNotFoundException("User not found");
+        } else {
+            Users users = byUsername.get();
+            users.setPassword(passwordEncoder.encode(loginDTO.password()));
+            Users save = userHibernate.save(users);
+            return userDTOMapper.apply(save);
+        }
+    }
+
+    @Override
+    public UserDTO update(RestUserDTO restUserDTO) {
+        Optional<Users> byUsername = userHibernate.findByUsername(SecurityUtils.getCurrentUserUsername());
+        if (byUsername.isEmpty()) {
+            throw new EntityNotFoundException("User not found");
+        } else {
+            Users users = byUsername.get();
+            users.setFirstName(restUserDTO.firstName());
+            users.setLastName(restUserDTO.lastName());
+            Users save = userHibernate.save(users);
+            return userDTOMapper.apply(save);
+        }
+    }
+
+    @Override
+    public void activate(Long id) {
+        Optional<Users> byId = userHibernate.findById(id);
+        if (byId.isEmpty()) {
+            throw new EntityNotFoundException("User not found");
+        } else {
+            Users users = byId.get();
+            users.setIsActive(!users.getIsActive());
+            userHibernate.save(users);
+        }
     }
 
     /**
@@ -72,6 +130,7 @@ public class UserServiceImpl implements UserService {
      * @return The generated password.
      */
     private String generatePassword() {
-        return RandomStringUtils.random(10, true, false);
+//        return RandomStringUtils.random(10, true, false);
+        return "password";
     }
 }

@@ -12,6 +12,7 @@ import com.thedeanda.lorem.LoremIpsum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -34,6 +35,8 @@ public class DataLoader implements CommandLineRunner {
     private final TrainingTypeHibernate trainingTypeHibernate;
     private final SpecializationHibernate specializationHibernate;
     private final UserHibernate userHibernate;
+    String password = "password";
+    private final PasswordEncoder passwordEncoder;
 
     public final Lorem lorem = LoremIpsum.getInstance();
 
@@ -55,7 +58,7 @@ public class DataLoader implements CommandLineRunner {
             user.setFirstName(lorem.getName());        // Random first name
             user.setLastName(lorem.getLastName());     // Random last name
             user.setUsername("user" + i);              // Unique username based on index
-            user.setPassword(lorem.getWords(1, 10));   // Random password
+            user.setPassword(passwordEncoder.encode(password));   // Random password
             user.setIsActive(true);                    // Active user status
 
             // Save the User to the repository (assuming there is a userRepository)
@@ -127,6 +130,18 @@ public class DataLoader implements CommandLineRunner {
             } catch (Exception e) {
                 log.error("Error saving training: {}", e.getMessage());
             }
+        }
+        Users user = new Users();
+        user.setFirstName("Qudratjon");
+        user.setLastName("Komilov");
+        user.setUsername("koinot_admin");
+        user.setPassword(passwordEncoder.encode("koinot"));
+        user.setIsActive(true);
+        user.setRole(RoleName.ROLE_ADMIN);
+
+        try {
+            user = userHibernate.save(user);
+        } catch (Exception ignored) {
         }
     }
 }

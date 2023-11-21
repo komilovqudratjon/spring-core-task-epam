@@ -45,4 +45,7 @@ public class Users extends AbsEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
     private Trainer trainer;
+
+    @Enumerated(EnumType.STRING)
+    private RoleName role = RoleName.ROLE_USER;
 }

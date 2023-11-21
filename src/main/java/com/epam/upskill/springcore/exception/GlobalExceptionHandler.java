@@ -60,6 +60,15 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(errorMessage, System.currentTimeMillis());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+    /**
+     * Handles exceptions related to Security.
+     */
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ErrorResponse> handleSecurityException(SecurityException e) {
+        log.error("SecurityException: ", e);
+        ErrorResponse errorResponse = new ErrorResponse("Security exception: " + e.getMessage(), System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
 
     /**
      * Handles MethodArgumentNotValidException.

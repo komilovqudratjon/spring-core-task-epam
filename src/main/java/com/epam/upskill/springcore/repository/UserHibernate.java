@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Optional;
 
 /**
  * @description: Repository interface for Users entity.
@@ -35,4 +36,12 @@ public class UserHibernate extends CrudRepository<Users, Long> {
     }
 
 
+    public Optional<Users> findByUsername(String username) {
+        log.trace("findByUsername({})", username);
+        return entityManager.createQuery("SELECT u FROM Users u WHERE u.username = :username", Users.class)
+                .setParameter("username", username)
+                .getResultList()
+                .stream()
+                .findFirst();
+    }
 }

@@ -1,9 +1,9 @@
 package com.epam.upskill.springcore.component;
 
 import com.epam.upskill.springcore.model.*;
-import com.epam.upskill.springcore.repository.SpecializationHibernate;
-import com.epam.upskill.springcore.repository.TrainingTypeHibernate;
-import com.epam.upskill.springcore.repository.UserHibernate;
+import com.epam.upskill.springcore.repository.SpecializationRepository;
+import com.epam.upskill.springcore.repository.TrainingTypeRepository;
+import com.epam.upskill.springcore.repository.UserRepository;
 import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainingDatabase;
@@ -32,9 +32,9 @@ public class DataLoader implements CommandLineRunner {
     private final TraineeDatabase traineeRepository;
     private final TrainerDatabase trainerRepository;
     private final TrainingDatabase trainingRepository;
-    private final TrainingTypeHibernate trainingTypeHibernate;
-    private final SpecializationHibernate specializationHibernate;
-    private final UserHibernate userHibernate;
+    private final TrainingTypeRepository trainingTypeRepository;
+    private final SpecializationRepository specializationRepository;
+    private final UserRepository userRepository;
     String password = "password";
     private final PasswordEncoder passwordEncoder;
 
@@ -44,33 +44,51 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         log.info("Loading data...");
 
-        generateData();
+        generateData(10);
 
         log.info("...data loaded");
 
     }
 
     @Transactional
-    public void generateData() {
-        for (long i = 0; i < 100; i++) {
+    public void generateData(int count) {
+        for (long i = 0; i < count; i++) {
             // Create a new random User
             Users user = new Users();
+            user.setDateOfBirth(new Date());
             user.setFirstName(lorem.getName());        // Random first name
             user.setLastName(lorem.getLastName());     // Random last name
-            user.setUsername("user" + i);              // Unique username based on index
+            user.setUsername("user" + i);
+            user.setRole(RoleName.ROLE_TRAINEE);
+
+            user.setAddress(lorem.getCity() + ", " + lorem.getCountry());// Random address
+            // Unique username based on index
             user.setPassword(passwordEncoder.encode(password));   // Random password
-            user.setIsActive(true);                    // Active user status
+            user.setIsActive(true);
+            Users user1 = new Users();
+            user1.setDateOfBirth(new Date());
+            user1.setFirstName(lorem.getName());        // Random first name
+            user1.setLastName(lorem.getLastName());     // Random last name
+            user1.setUsername("user1" + i);
+            user1.setAddress(lorem.getCity() + ", " + lorem.getCountry());// Random address
+            user1.setRole(RoleName.ROLE_TRAINER);
+            // Unique user1name based on index
+            user1.setPassword(passwordEncoder.encode(password));   // Random password
+            user1.setIsActive(true);                    // Active user status
 
             // Save the User to the repository (assuming there is a userRepository)
             try {
-                user = userHibernate.save(user);
+                user1 = userRepository.save(user1);
+            } catch (Exception ignored) {
+            }
+            // Save the User to the repository (assuming there is a userRepository)
+            try {
+                user = userRepository.save(user);
             } catch (Exception ignored) {
             }
 
             // Now, create a new Trainee with the new User
             Trainee trainee = Trainee.builder()
-                    .dateOfBirth(new Date()) // Replace with a randomly generated Date
-                    .address(lorem.getCity() + ", " + lorem.getCountry()) // Random address
                     .user(user) // Associate the User we just created
                     .build();
 
@@ -87,13 +105,13 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the Specialization to the repository (assuming there is a specializationRepository)
             try {
-                specialization = specializationHibernate.save(specialization);
+                specialization = specializationRepository.save(specialization);
             } catch (Exception ignored) {
             }
 
             // Now, create a new Trainer with the new User
             Trainer trainer = Trainer.builder()
-                    .user(user) // Associate the User we just created
+                    .user(user1) // Associate the User we just created
                     .specialization(specialization) // Associate the Specialization we just created
                     .build();
 
@@ -110,7 +128,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Save the TrainingType to the repository (assuming there is a trainingTypeRepository)
             try {
-                trainingType = trainingTypeHibernate.save(trainingType);
+                trainingType = trainingTypeRepository.save(trainingType);
             } catch (Exception ignored) {
             }
 
@@ -140,7 +158,7 @@ public class DataLoader implements CommandLineRunner {
         user.setRole(RoleName.ROLE_ADMIN);
 
         try {
-            user = userHibernate.save(user);
+            user = userRepository.save(user);
         } catch (Exception ignored) {
         }
     }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,6 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers(
                         "/v1/users/register",
+                        "/api/v1/trainees/register",
+                        "/api/v1/trainers/register",
                         "/v3/api-docs",
                         "/v3/api-docs/**",
                         "/swagger-ui.html",

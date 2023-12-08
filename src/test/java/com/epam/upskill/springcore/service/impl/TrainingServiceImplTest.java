@@ -3,8 +3,8 @@ package com.epam.upskill.springcore.service.impl;
 import com.epam.upskill.springcore.model.*;
 import com.epam.upskill.springcore.model.dtos.ResTrainingDTO;
 import com.epam.upskill.springcore.model.dtos.TrainingDTO;
-import com.epam.upskill.springcore.repository.TrainerHibernate;
-import com.epam.upskill.springcore.repository.TrainingTypeHibernate;
+import com.epam.upskill.springcore.repository.TrainerRepository;
+import com.epam.upskill.springcore.repository.TrainingTypeRepository;
 import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainingDatabase;
@@ -40,7 +40,7 @@ class TrainingServiceImplTest {
 
 
     @Mock
-    private TrainerHibernate trainerHibernateMock; // Mock for the TrainerHibernate
+    private TrainerRepository trainerRepositoryMock; // Mock for the TrainerRepository
 
 
     @InjectMocks
@@ -58,7 +58,7 @@ class TrainingServiceImplTest {
     private TraineeDatabase traineeRepository;
 
     @Mock
-    private TrainingTypeHibernate trainingTypeHibernate;
+    private TrainingTypeRepository trainingTypeRepository;
 
 
     // Sample entities for use in tests
@@ -109,7 +109,7 @@ class TrainingServiceImplTest {
         ResTrainingDTO resTrainingDTO = new ResTrainingDTO(training.getId(), training.getTrainer().getId(), training.getTrainee().getId(), training.getTrainingName(), training.getTrainingType().getId(), training.getTrainingDate(), training.getTrainingDuration());
         when(trainerRepository.findById(any())).thenReturn(Optional.of(training.getTrainer()));
         when(traineeRepository.findById(any())).thenReturn(Optional.of(training.getTrainee()));
-        when(trainingTypeHibernate.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
+        when(trainingTypeRepository.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
         when(trainingRepository.save(any())).thenReturn(training);
         when(trainingDTOMapper.apply(any())).thenReturn(trainingDTO);
 
@@ -140,7 +140,7 @@ class TrainingServiceImplTest {
         ResTrainingDTO resTrainingDTO = new ResTrainingDTO(training.getId(), training.getTrainer().getId(), training.getTrainee().getId(), training.getTrainingName(), training.getTrainingType().getId(), training.getTrainingDate(), training.getTrainingDuration());
         when(trainerRepository.findById(any())).thenReturn(Optional.of(training.getTrainer()));
         when(traineeRepository.findById(any())).thenReturn(Optional.of(training.getTrainee()));
-        when(trainingTypeHibernate.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
+        when(trainingTypeRepository.findById(any())).thenReturn(Optional.of(training.getTrainingType()));
         when(trainingRepository.save(any())).thenThrow(new RuntimeException("Unexpected error"));
 
         // When & Then

@@ -1,7 +1,7 @@
 package com.epam.upskill.springcore.service;
 
 import com.epam.upskill.springcore.model.dtos.LoginDTO;
-import com.epam.upskill.springcore.model.dtos.RestToken;
+import com.epam.upskill.springcore.model.dtos.LoginResDTO;
 import com.epam.upskill.springcore.model.dtos.RestUserDTO;
 import com.epam.upskill.springcore.model.dtos.UserDTO;
 
@@ -12,14 +12,19 @@ import com.epam.upskill.springcore.model.dtos.UserDTO;
  * @author: Qudratjon Komilov
  */
 public interface UserService {
-    UserDTO register(RestUserDTO userDTO);
+    LoginResDTO register(RestUserDTO userDTO);
 
-    RestToken login(LoginDTO loginDTO);
+    void login(LoginResDTO loginResDTO);
 
-    UserDTO changePassword(LoginDTO loginDTO);
+    LoginResDTO changePassword(LoginDTO loginResDTO);
 
     UserDTO update(RestUserDTO restUserDTO);
 
     void activate(Long id);
+
+    UserDTO getMe();
+
+    String generateUsername(String firstName, String lastName);
+    String generatePassword();
 }
 

@@ -31,8 +31,8 @@ public class TrainingType extends AbsEntity{
     @Column(name = "training_type_name", nullable = false, unique = true)
     private String trainingTypeName;
 
-    @OneToMany(mappedBy = "trainingType")
-    private Set<Training> trainings = new HashSet<>();
+//    @OneToMany(mappedBy = "trainingType")
+//    private Set<Training> trainings = new HashSet<>();
 
 
 }

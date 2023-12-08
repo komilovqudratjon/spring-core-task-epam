@@ -1,12 +1,12 @@
 package com.epam.upskill.springcore.service.db.common;
 
 import com.epam.upskill.springcore.model.Trainer;
-import com.epam.upskill.springcore.model.dtos.Page;
-import com.epam.upskill.springcore.model.dtos.TrainerDTO;
-import com.epam.upskill.springcore.repository.TrainerHibernate;
-import com.epam.upskill.springcore.service.db.GenericDatabase;
+import com.epam.upskill.springcore.model.Users;
+import com.epam.upskill.springcore.repository.TrainerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,10 +23,10 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class TrainerDatabase  {
+public class TrainerDatabase {
 
-    private final GenericDatabase<Trainer, Long> traineeDAO;
-    private final TrainerHibernate trainerHibernate;
+    private final TrainerRepository trainerRepository;
+    private final UserDatabase userDatabase;
 
     /**
      * Saves a Trainer entity.
@@ -37,10 +37,8 @@ public class TrainerDatabase  {
      */
     public Trainer save(Trainer entity) {
         log.trace("Entering save method with entity: {}", entity);
-        Trainer saved = trainerHibernate.save(entity);
+        Trainer saved = trainerRepository.save(entity);
         log.debug("Trainer saved to PostgreSQL: {}", saved);
-        traineeDAO.save(saved);
-        log.trace("Exiting save method");
         return saved;
     }
 
@@ -54,36 +52,9 @@ public class TrainerDatabase  {
      */
     public Optional<Trainer> findById(Long id) {
         log.trace("Entering findById method with ID: {}", id);
-
-        Optional<Trainer> found = traineeDAO.findById(id);
-        log.debug("Trainer search in local hash map for ID {}: {}", id, found);
-
-        if (found.isEmpty()) {
-            found = trainerHibernate.findById(id);
-            log.debug("Trainer search in PostgreSQL for ID {}: {}", id, found);
-
-            found.ifPresent(trainer -> {
-                traineeDAO.save(trainer);
-                log.debug("Trainer saved to local hash map after PostgreSQL fetch: {}", trainer);
-            });
-        }
-        log.trace("Exiting findById method");
-
-        return found;
+        return trainerRepository.findById(id);
     }
 
-    /**
-     * Deletes a Trainer by its ID.
-     * The entity is deleted from both the repository and the local cache.
-     *
-     * @param id the ID of the Trainer to be deleted
-     */
-    public void deleteById(Long id) {
-        trainerHibernate.deleteById(id);
-        log.debug("Trainer deleted from PostgreSQL with ID: {}", id);
-        traineeDAO.deleteById(id);
-        log.debug("Trainer deleted from local hash map with ID: {}", id);
-    }
 
     /**
      * Finds all Trainer entities.
@@ -92,30 +63,30 @@ public class TrainerDatabase  {
      * @return a List of Trainer entities
      */
     public List<Trainer> findAll() {
-        List<Trainer> all = traineeDAO.findAll();
         log.debug("Attempt to find all Trainers in local hash map");
-
-        if (all.isEmpty()) {
-            log.debug("No Trainers found in local hash map, checking PostgreSQL");
-            all = trainerHibernate.findAll();
-
-            for (Trainer trainer : all) {
-                traineeDAO.save(trainer);
-            }
-            log.debug("Trainers from PostgreSQL saved to local hash map: {}", all);
-        }
-        return all;
+        return trainerRepository.findAll();
     }
 
     public Optional<Trainer> findByUserUsername(String username) {
-        return trainerHibernate.findByUserUsername(username);
+        return trainerRepository.findByUserUsername(username);
     }
 
     public Page<Trainer> getByFilter(Integer page, Integer size, String search) {
-        return trainerHibernate.getByFilter(page, size, search);
+        return trainerRepository.findByUserFirstNameContainingOrUserLastNameContaining(search, search, Pageable.ofSize(size).withPage(page));
     }
 
-    public Page<Trainer> getNotAssignedTrainers(Long traineeId) {
-        return trainerHibernate.getNotAssignedTrainers(traineeId);
+    public Page<Trainer> getNotAssignedTrainers(String username, Integer page, Integer size) {
+        return trainerRepository.getNotAssignedTrainers(username, Pageable.ofSize(size).withPage(page));
+    }
+
+    public void activate(String username, boolean isActive) {
+        trainerRepository.findByUserUsername(username).ifPresent(trainer -> {
+            trainer.setIsActive(isActive);
+            trainerRepository.save(trainer);
+        });
+    }
+
+    public List<Trainer> findAllByUserUsernameIn(List<String> usernames) {
+        return trainerRepository.findAllByUserUsernameIn(usernames);
     }
 }

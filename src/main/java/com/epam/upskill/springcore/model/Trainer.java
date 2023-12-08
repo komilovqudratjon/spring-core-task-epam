@@ -31,11 +31,11 @@ public class Trainer extends AbsEntity{
     @JoinColumn(name = "specialization_id", nullable = false)
     private Specialization specialization;
 
-    @OneToOne
+    @OneToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},fetch = FetchType.EAGER)
     @JoinTable(
             name = "trainer_trainee",
             joinColumns = { @JoinColumn(name = "trainer_id") },

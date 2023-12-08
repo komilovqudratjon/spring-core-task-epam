@@ -2,9 +2,9 @@ package com.epam.upskill.springcore.service.impl;
 
 import com.epam.upskill.springcore.model.Trainee;
 import com.epam.upskill.springcore.model.Users;
-import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
+import com.epam.upskill.springcore.model.dtos.ReqTraineeDTO;
 import com.epam.upskill.springcore.model.dtos.TraineeDTO;
-import com.epam.upskill.springcore.repository.UserHibernate;
+import com.epam.upskill.springcore.repository.UserRepository;
 import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.TraineeDTOMapper;
 import com.thedeanda.lorem.Lorem;
@@ -36,7 +36,7 @@ class TraineeServiceImplTest {
     private TraineeDatabase traineeRepository;
 
     @Mock
-    UserHibernate userHibernate;
+    UserRepository userRepository;
 
     @Mock
     private TraineeDTOMapper traineeDTOMapper;
@@ -57,14 +57,14 @@ class TraineeServiceImplTest {
         Long userId = 3L;
         Users mockUser = new Users();
         mockUser.setId(userId);
-        ResTraineeDTO traineeDTO = new ResTraineeDTO(1L, new Date(), lorem.getCity(), userId);
-        when(userHibernate.findById(userId)).thenReturn(Optional.of(mockUser));
+        ReqTraineeDTO traineeDTO = new ReqTraineeDTO(1L, new Date(), lorem.getCity(), userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
         when(traineeRepository.save(any(Trainee.class))).thenAnswer(i -> i.getArguments()[0]);
-        when(userHibernate.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
         when(traineeRepository.save(any(Trainee.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // Act
-        TraineeDTO result = traineeService.createOrUpdate(traineeDTO);
+        TraineeDTO result = traineeService.update(traineeDTO);
 
         // Assert
         assertNull(result);

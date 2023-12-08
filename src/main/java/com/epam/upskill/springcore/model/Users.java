@@ -3,6 +3,7 @@ package com.epam.upskill.springcore.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * @description: Entity class for TrainingType.
@@ -10,7 +11,6 @@ import javax.persistence.*;
  * @time: 5:17 AM 26 $
  * @author: Qudratjon Komilov
  */
-
 
 @Entity
 @Table(name = "users")
@@ -40,10 +40,16 @@ public class Users extends AbsEntity {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    @Column(name = "date_of_birth")
+    private Date dateOfBirth;
+
+    @Column(name = "address")
+    private String address;
+
+    @OneToOne(mappedBy = "user",  optional = true)
     private Trainee trainee;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
+    @OneToOne(mappedBy = "user",  optional = true)
     private Trainer trainer;
 
     @Enumerated(EnumType.STRING)

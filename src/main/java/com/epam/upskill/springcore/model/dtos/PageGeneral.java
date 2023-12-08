@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Page<T> {
+public class PageGeneral<T> {
     private List<T> content;
     private int number;
     private int size;

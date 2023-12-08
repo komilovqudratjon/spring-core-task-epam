@@ -25,11 +25,11 @@ public class Training extends AbsEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "trainee_id", nullable = false)
     private Trainee trainee;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "trainer_id", nullable = false)
     private Trainer trainer;
 
@@ -45,6 +45,4 @@ public class Training extends AbsEntity{
 
     @Column(name = "training_duration", nullable = false)
     private Integer trainingDuration;
-
-
 }

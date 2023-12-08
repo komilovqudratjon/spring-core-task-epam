@@ -1,7 +1,7 @@
 package com.epam.upskill.springcore.security;
 
 import com.epam.upskill.springcore.model.Users;
-import com.epam.upskill.springcore.repository.UserHibernate;
+import com.epam.upskill.springcore.service.db.common.UserDatabase;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,11 +24,11 @@ import java.util.Collections;
 public class CustomUserDetailsService implements UserDetailsService {
 
 
-    private UserHibernate userRepository;
+    private UserDatabase userDatabase;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users user = userRepository.findByUsername(username)
+        Users user = userDatabase.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         return new UserDetails() {
             @Override

@@ -1,13 +1,14 @@
 package com.epam.upskill.springcore.controller;
 
 import com.epam.upskill.springcore.model.dtos.LoginDTO;
-import com.epam.upskill.springcore.model.dtos.RestUserDTO;
+import com.epam.upskill.springcore.model.dtos.LoginResDTO;
 import com.epam.upskill.springcore.model.dtos.UserDTO;
 import com.epam.upskill.springcore.service.UserService;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -19,52 +20,50 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/v1/users")
 @AllArgsConstructor
+@Api(tags = "User Management" ,value = "User Management System", description = "Operations pertaining to user in User Management System")
 public class UserController {
 
     private final UserService userService;
 
-    /**
-     * Endpoint for creating or updating a user.
-     *
-     * @param restUserDTO The user data transfer object.
-     * @return ResponseEntity containing the created or updated user.
-     */
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO register(@RequestBody RestUserDTO restUserDTO) {
-        return userService.register(restUserDTO);
-    }
 
-    /**
-     * user password change.
-     * @param loginDTO The user data transfer object.
-     * @return ResponseEntity containing the created or updated user.
-     */
     @PostMapping("/change-password")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO changePassword(@RequestBody LoginDTO loginDTO) {
+    @ApiOperation(value = "Change User Password", notes = "Changes the password for a user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Password changed successfully"),
+            @ApiResponse(code = 400, message = "Invalid user details provided")
+    })
+    public LoginResDTO changePassword(@ApiParam(value = "User login information", required = true) @RequestBody LoginDTO loginDTO) {
         return userService.changePassword(loginDTO);
     }
 
-    /**
-     * Update user profile
-     * @param restUserDTO The user data transfer object.
-     */
-    @PutMapping("/update")
+    @GetMapping("/me")
     @ResponseStatus(HttpStatus.OK)
-    public UserDTO update(@RequestBody RestUserDTO restUserDTO) {
-        return userService.update(restUserDTO);
+    @ApiOperation(value = "Get User Profile", notes = "Retrieves the profile of the currently logged-in user")
+    @ApiResponse(code = 200, message = "User profile retrieved successfully")
+    public UserDTO getMe() {
+        return userService.getMe();
     }
 
 
-    /**
-     * Activate/De-activate user
-     * @param id The user id.
-     */
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Login User", notes = "Authenticates a user with given credentials")
+    @ApiResponse(code = 200, message = "User logged in successfully")
+    public void login(@ApiParam(value = "User login credentials", required = true) @RequestBody LoginResDTO loginResDTO) {
+        userService.login(loginResDTO);
+    }
+
+
     @PutMapping("/activate/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Activate/Deactivate User", notes = "Activates or deactivates a user account")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "User activation status changed"),
+            @ApiResponse(code = 404, message = "User not found")
+    })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void activate(@PathVariable Long id) {
+    public void activate(@ApiParam(value = "ID of the user to activate/deactivate", required = true) @PathVariable Long id) {
         userService.activate(id);
     }
 

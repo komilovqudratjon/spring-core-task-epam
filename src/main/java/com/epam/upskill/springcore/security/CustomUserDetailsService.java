@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * @description: TODO
+ * @description: TODO This class is used for CustomUserDetailsService
  * @date: 21 November 2023 $
  * @time: 12:54 AM 06 $
  * @author: Qudratjon Komilov

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,15 +60,15 @@ public class TraineeDatabase {
     }
 
 
-    public Optional<Trainee> findByUsername(String username) {
+    public Trainee findByUsername(String username) {
         // only use traineeRepository
         log.trace("Searching for trainee with username: {}", username);
         Optional<Trainee> byUsername = traineeRepository.findByUserUsername(username);
         if (byUsername.isEmpty()) {
             log.warn("Trainee not found with username: {}", username);
-            return Optional.empty();
+            throw new EntityNotFoundException("Trainee not found with username: " + username);
         }
-        return byUsername;
+        return byUsername.get();
     }
 
     @Transactional
@@ -82,7 +83,6 @@ public class TraineeDatabase {
             traineeRepository.deleteByTrainerTraineeById(user.getId());
             trainingDatabase.deleteByTraineeId(trainee.getId());
             traineeRepository.deleteId(trainee.getId());
-//            userDatabase.deleteById(user.getId());
 
         } else {
             log.info("No trainee found with username: {}", username);

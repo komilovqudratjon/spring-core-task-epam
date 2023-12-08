@@ -1,6 +1,5 @@
 package com.epam.upskill.springcore.config;
 
-import com.epam.upskill.springcore.config.loging.TransactionLoggingInterceptor;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;

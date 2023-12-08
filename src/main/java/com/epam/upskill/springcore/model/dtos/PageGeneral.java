@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.List;
 
 /**
- * @description: TODO
+ * @description: TODO This class is used for pagination
  * @date: 19 November 2023 $
  * @time: 12:58 AM 45 $
  * @author: Qudratjon Komilov

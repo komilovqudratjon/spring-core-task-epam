@@ -1,7 +1,6 @@
 package com.epam.upskill.springcore.service.db.common;
 
 import com.epam.upskill.springcore.model.Trainer;
-import com.epam.upskill.springcore.model.Users;
 import com.epam.upskill.springcore.repository.TrainerRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,9 +50,12 @@ public class TrainerDatabase {
      * @param id the ID of the Trainer
      * @return an Optional containing the found Trainer or empty if not found
      */
-    public Optional<Trainer> findById(Long id) {
+    public Trainer findById(Long id) {
         log.trace("Entering findById method with ID: {}", id);
-        return trainerRepository.findById(id);
+        return trainerRepository.findById(id).orElseThrow(() -> {
+            log.error("Trainer not found by ID: {}", id);
+            return new EntityNotFoundException("Trainer not found by ID: " + id);
+        });
     }
 
 
@@ -67,8 +70,11 @@ public class TrainerDatabase {
         return trainerRepository.findAll();
     }
 
-    public Optional<Trainer> findByUserUsername(String username) {
-        return trainerRepository.findByUserUsername(username);
+    public Trainer findByUserUsername(String username) {
+        return trainerRepository.findByUserUsername(username).orElseThrow(() -> {
+            log.error("Trainer not found by username: {}", username);
+            return new EntityNotFoundException("Trainer not found by username: " + username);
+        });
     }
 
     public Page<Trainer> getByFilter(Integer page, Integer size, String search) {

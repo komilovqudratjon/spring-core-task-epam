@@ -52,19 +52,13 @@ public class TrainerServiceImpl implements TrainerService {
     public TrainerDTO update(ReqTrainerDTO trainerDTO) {
         log.debug("Request to create/update trainerDTO: {}", trainerDTO);
 
-        Trainer trainer = trainerRepository.findByUserUsername(trainerDTO.username()).orElseThrow(() -> {
-            log.error("Trainer not found for username: {}", trainerDTO.username());
-            return new EntityNotFoundException("Trainer not found for username: " + trainerDTO.username());
-        });
+        Trainer trainer = trainerRepository.findByUserUsername(trainerDTO.username());
 
         trainer.setSpecialization(specializationRepository.findById(trainerDTO.specializationId()).orElseThrow(() -> {
             log.error("Specialization not found by id: {}", trainerDTO.specializationId());
             return new EntityNotFoundException("Specialization not found by id: " + trainerDTO.specializationId());
         }));
-        Users user = trainerRepository.findByUserUsername(trainerDTO.username()).orElseThrow(() -> {
-            log.error("User not found by id: {}", trainerDTO.username());
-            return new EntityNotFoundException("User not found by id: " + trainerDTO.username());
-        }).getUser();
+        Users user = trainerRepository.findByUserUsername(trainerDTO.username()).getUser();
         user.setFirstName(trainerDTO.firstName());
         user.setLastName(trainerDTO.lastName());
         user.setDateOfBirth(trainerDTO.birthDate());
@@ -89,10 +83,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public TrainerDTO getById(Long id) {
         log.debug("Request to retrieve trainer by id: {}", id);
-        return trainerDTOMapper.apply(trainerRepository.findById(id).orElseThrow(() -> {
-            log.error("Trainer not found for id: {}", id);
-            return new EntityNotFoundException("Trainer not found for id: " + id);
-        }));
+        return trainerDTOMapper.apply(trainerRepository.findById(id));
     }
 
     /**
@@ -119,10 +110,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public TrainerDTO getByUsername(String username) {
         log.debug("Request to retrieve trainer by username: {}", username);
-        return trainerDTOMapper.apply(trainerRepository.findByUserUsername(username).orElseThrow(() -> {
-            log.error("Trainer not found for username: {}", username);
-            return new EntityNotFoundException("Trainer not found for username: " + username);
-        }));
+        return trainerDTOMapper.apply(trainerRepository.findByUserUsername(username));
     }
 
     /**

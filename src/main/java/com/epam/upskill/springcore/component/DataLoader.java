@@ -15,7 +15,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.util.Date;
 
 /**
@@ -44,15 +43,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         log.info("Loading data...");
 
-        generateData(10);
-
-        log.info("...data loaded");
-
-    }
-
-    @Transactional
-    public void generateData(int count) {
-        for (long i = 0; i < count; i++) {
+        for (long i = 0; i < 10; i++) {
             // Create a new random User
             Users user = new Users();
             user.setDateOfBirth(new Date());
@@ -161,5 +152,8 @@ public class DataLoader implements CommandLineRunner {
             user = userRepository.save(user);
         } catch (Exception ignored) {
         }
+        log.info("...data loaded");
+
     }
+
 }

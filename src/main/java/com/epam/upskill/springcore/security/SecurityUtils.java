@@ -4,7 +4,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * @description: TODO
+ * @description: TODO This class is used for SecurityUtils
  * @date: 21 November 2023 $
  * @time: 4:03 PM 35 $
  * @author: Qudratjon Komilov

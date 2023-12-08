@@ -8,22 +8,32 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
+ * Controller class for managing Trainee entities.
+ * This class handles HTTP requests related to Trainee operations such as registration,
+ * update, delete, and retrieval of Trainee details.
+ *
  * @description: Controller class for managing Trainee entities.
- * @date: 10 November 2023 $
- * @time: 1:07 AM 26 $
+ * @date: 10 November 2023
+ * @time: 1:07 AM 26
  * @author: Qudratjon Komilov
  */
-
 @RestController
 @RequestMapping("/v1/trainees")
 @AllArgsConstructor
-@Api(tags = "Trainee Management", description = "Endpoints for managing trainees")
+@Api(tags = "Trainee Management", value = "Endpoints for managing trainees")
 public class TraineeController {
+
     private final TraineeService traineeService;
+
+    /**
+     * Updates an existing trainee's details.
+     *
+     * @param trainee The trainee object to be updated, provided in the request body.
+     * @return Updated TraineeDTO object.
+     */
     @ApiOperation(value = "Update a trainee", notes = "Updates an existing trainee's details")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated the trainee"),
@@ -34,6 +44,12 @@ public class TraineeController {
         return traineeService.update(trainee);
     }
 
+    /**
+     * Registers a new trainee and returns login details.
+     *
+     * @param traineeDTO The trainee registration details.
+     * @return Login response with trainee details.
+     */
     @ApiOperation(value = "Register a new trainee", notes = "Registers a trainee and returns login details")
     @ApiResponse(code = 201, message = "Trainee successfully registered")
     @PostMapping("/register")
@@ -41,6 +57,11 @@ public class TraineeController {
         return traineeService.register(traineeDTO);
     }
 
+    /**
+     * Deletes a trainee based on their username.
+     *
+     * @param username The username of the trainee to delete.
+     */
     @ApiOperation(value = "Delete a trainee by username", notes = "Deletes a trainee based on their username")
     @ApiResponse(code = 204, message = "Trainee successfully deleted")
     @DeleteMapping("/username/{username}")
@@ -48,23 +69,13 @@ public class TraineeController {
         traineeService.deleteByUsername(username);
     }
 
-    @ApiOperation(value = "Get trainees with optional filters", notes = "Retrieves a page of trainees with optional filtering by criteria like date of birth and address")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Page of trainees retrieved successfully")
-    })
-    @GetMapping
-    public PageGeneral<TraineeDTO> getByFilter(
-            @ApiParam(value = "Page number for pagination")
-            @RequestParam(value = "page", defaultValue = "1") @Min(0) Integer page,
 
-            @ApiParam(value = "Page size for pagination")
-            @RequestParam(value = "size", defaultValue = "5") @Min(0) Integer size,
-
-            @ApiParam(value = "Search criteria for filtering trainees", required = false)
-            @RequestParam(required = false, name = "search") String search) {
-        return traineeService.getByFilter(page, size, search);
-    }
-
+    /**
+     * Retrieves a trainee's profile based on their username.
+     *
+     * @param username The username of the trainee.
+     * @return TraineeDTO containing the profile of the trainee.
+     */
     @ApiOperation(value = "Get Trainee profile by username", notes = "Retrieves a trainee's profile based on their username")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Trainee profile retrieved successfully"),
@@ -77,6 +88,13 @@ public class TraineeController {
         return traineeService.getByUsername(username);
     }
 
+    /**
+     * Adds trainers to a trainee's list based on usernames.
+     *
+     * @param traineeUsername The username of the trainee to update.
+     * @param trainerUsername A list of trainer usernames to add to the trainee's trainers list.
+     * @return List of TrainerDTO representing the updated trainers list.
+     */
     @ApiOperation(value = "Update Trainee's trainers list", notes = "Adds trainers to a trainee's list based on usernames")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Trainers list updated successfully"),
@@ -92,20 +110,27 @@ public class TraineeController {
         return traineeService.addTrainers(traineeUsername, trainerUsername);
     }
 
+    /**
+     * Changes the active status of a trainee.
+     * This method is accessible only to users with 'ROLE_ADMIN'.
+     *
+     * @param username The username of the trainee.
+     * @param isActive The boolean flag to activate or deactivate the trainee.
+     */
     @ApiOperation(value = "Activate or deactivate a trainee", notes = "Changes the active status of a trainee")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Trainee's status updated successfully"),
             @ApiResponse(code = 404, message = "Trainee not found")
     })
-    @PatchMapping("/status")
+    @PatchMapping("/active-status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void activate(
+    public void setActiveStatus(
             @ApiParam(value = "Username of the trainee to activate or deactivate", required = true)
             @RequestParam String username,
 
             @ApiParam(value = "Boolean flag to activate or deactivate the trainee", required = true)
             @RequestParam boolean isActive) {
-        traineeService.activate(username, isActive);
+        traineeService.setActiveStatus(username, isActive);
     }
 }
 

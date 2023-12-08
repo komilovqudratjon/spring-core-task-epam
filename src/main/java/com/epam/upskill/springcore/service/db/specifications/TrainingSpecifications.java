@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @description: TODO
+ * @description: TODO This class is used for TrainingSpecifications like filter
  * @date: 07 December 2023 $
  * @time: 3:15 AM 05 $
  * @author: Qudratjon Komilov

@@ -16,12 +16,6 @@ import java.util.List;
 public interface TraineeService {
     TraineeDTO update(ReqTraineeDTO trainee);
 
-    void delete(Long id);
-
-    TraineeDTO getById(Long id);
-
-    PageGeneral<TraineeDTO> getByFilter(int page, int size, String name);
-
     TraineeDTO getByUsername(String username);
 
     void deleteByUsername(String username);
@@ -30,6 +24,6 @@ public interface TraineeService {
 
     LoginResDTO register(ReqUserTraineeDTO restUserDTO);
 
-    void activate(String username, boolean isActive);
+    void setActiveStatus(String username, boolean isActive);
 }
 

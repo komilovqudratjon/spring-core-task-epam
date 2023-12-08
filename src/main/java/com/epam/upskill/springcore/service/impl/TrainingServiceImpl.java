@@ -53,14 +53,8 @@ public class TrainingServiceImpl implements TrainingService {
         log.debug("Request to create or update training: {}", training);
         Training trainer = new Training();
         trainer.setId(training.id());
-        trainer.setTrainer(trainerRepository.findByUserUsername(training.trainerUsername()).orElseThrow(() -> {
-            log.error("Trainer not found by id: {}", training.trainerUsername());
-            return new EntityNotFoundException("Trainer not found by id: " + training.trainerUsername());
-        }));
-        trainer.setTrainee(traineeRepository.findByUsername(training.traineeUsername()).orElseThrow(() -> {
-            log.error("Trainee not found by id: {}", training.traineeUsername());
-            return new EntityNotFoundException("Trainee not found by id: " + training.traineeUsername());
-        }));
+        trainer.setTrainer(trainerRepository.findByUserUsername(training.trainerUsername()));
+        trainer.setTrainee(traineeRepository.findByUsername(training.traineeUsername()));
         trainer.setTrainingName(training.trainingName());
         trainer.setTrainingType(trainingTypeRepository.findById(training.trainingTypeId()).orElseThrow(() -> {
             log.error("Training type not found by id: {}", training.trainingTypeId());

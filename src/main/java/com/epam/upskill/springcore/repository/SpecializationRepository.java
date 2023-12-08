@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * @description: TODO
+ * @description: TODO This class is used for SpecializationRepository
  * @date: 19 November 2023 $
  * @time: 2:48 AM 09 $
  * @author: Qudratjon Komilov

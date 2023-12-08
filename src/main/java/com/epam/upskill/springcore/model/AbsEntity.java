@@ -12,7 +12,6 @@ import javax.persistence.OrderBy;
 import java.sql.Timestamp;
 
 /**
- * @description: TODO
  * @date: 20 November 2023 $
  * @time: 3:48 PM 22 $
  * @author: Qudratjon Komilov

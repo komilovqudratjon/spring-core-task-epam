@@ -20,8 +20,6 @@ public interface TrainerRepository extends JpaRepository<Trainer, Long> {
     // Custom query for getting not assigned trainers
     @Query("SELECT t FROM Trainer t WHERE t.id NOT IN (SELECT t.id FROM Trainer t JOIN t.trainees tr WHERE tr.user.username = :username)")
     Page<Trainer> getNotAssignedTrainers(String username, Pageable pageable);
-
-    Page<Trainer> findAllByTraineesUserUsernameNot(String username, Pageable pageable);
-
+    
     List<Trainer> findAllByUserUsernameIn(Collection<String> user_username);
 }

@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * @description: TODO
  * @date: 08 December 2023 $
  * @time: 1:23 PM 57 $
  * @author: Qudratjon Komilov

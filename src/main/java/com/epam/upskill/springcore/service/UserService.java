@@ -18,8 +18,6 @@ public interface UserService {
 
     LoginResDTO changePassword(LoginDTO loginResDTO);
 
-    UserDTO update(RestUserDTO restUserDTO);
-
     void activate(Long id);
 
     UserDTO getMe();

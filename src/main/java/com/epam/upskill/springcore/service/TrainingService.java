@@ -19,10 +19,6 @@ import java.util.List;
 public interface TrainingService {
     TrainingDTO createOrUpdate(ResTrainingDTO trainer);
 
-    TrainingDTO getById(Long id);
-
-    List<TrainingDTO> getAll();
-
     PageGeneral<TrainingDTO> getTraineeTrainings(String username, Date periodFrom, Date periodTo, String trainerName, String trainingType, int page, int size);
 
     PageGeneral<TrainingDTO> getTrainerTrainings(String username, Date periodFrom, Date periodTo, String traineeName, String trainingType, int page, int size);

@@ -3,6 +3,7 @@ package com.epam.upskill.springcore.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -17,6 +18,7 @@ import javax.persistence.*;
 @Table(name = "training_type")
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class TrainingType extends AbsEntity {
 

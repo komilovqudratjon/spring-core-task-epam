@@ -12,5 +12,6 @@ import javax.validation.constraints.NotNull;
 public record RestUserTrainerDTO(
                                  @NotNull(message = "lastName should not be null") String lastName,
                                  @NotNull(message = "firstName should not be null")
-                                 String firstName, Long specializationId) {
+                                 String firstName,
+                                 Long specializationId) {
 }

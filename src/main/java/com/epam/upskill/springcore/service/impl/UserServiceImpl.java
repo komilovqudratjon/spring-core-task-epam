@@ -114,28 +114,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     * Updates the user's information.
-     * <p>
-     * This method updates the first and last names of the currently logged-in user.
-     *
-     * @param restUserDTO The DTO containing the user's new first and last names.
-     * @return UserDTO The updated user information.
-     * @throws EntityNotFoundException if the user is not found.
-     */
-    @Override
-    public UserDTO update(RestUserDTO restUserDTO) {
-        Optional<Users> byUsername = userDatabase.findByUsername(SecurityUtils.getCurrentUserUsername());
-        if (byUsername.isEmpty()) {
-            throw new EntityNotFoundException("User not found");
-        } else {
-            Users users = byUsername.get();
-            users.setFirstName(restUserDTO.firstName());
-            users.setLastName(restUserDTO.lastName());
-            Users save = userDatabase.save(users);
-            return userDTOMapper.apply(save);
-        }
-    }
 
     /**
      * Toggles the activation status of a user.

@@ -62,28 +62,6 @@ public class TrainerController {
         return trainerService.register(traineeDTO);
     }
 
-
-    /**
-     * Retrieves a paginated list of trainers based on the given filter criteria.
-     * Allows filtering the trainers through a search string and pagination parameters.
-     *
-     * @param page   The page number of the requested data.
-     * @param size   The number of records per page.
-     * @param search A search string to filter trainers.
-     * @return A paginated list of Trainer DTOs matching the filter criteria.
-     */
-    @ApiOperation(value = "Get Trainers by Filter", notes = "Retrieve trainers based on the given filters.")
-    @ApiResponses({@ApiResponse(code = 200, message = "Trainers retrieved successfully")})
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public PageGeneral<TrainerDTO> getByFilter(@ApiParam(value = "Page number", defaultValue = "0") @RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page,
-
-                                               @ApiParam(value = "Size of the page", defaultValue = "5") @RequestParam(value = "size", defaultValue = "5") @Min(0) Integer size,
-
-                                               @ApiParam(value = "Search string for filtering trainers", required = false) @RequestParam(required = false, name = "search") String search) {
-        return trainerService.getByFilter(page, size, search);
-    }
-
     /**
      * Retrieves a trainer's details by their username.
      * This method is used to fetch the details of a specific trainer based on their unique username.

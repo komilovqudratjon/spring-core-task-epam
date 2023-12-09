@@ -72,32 +72,6 @@ public class TrainerServiceImpl implements TrainerService {
 
     }
 
-    /**
-     * Retrieves a trainer by their unique identifier.
-     * Throws an EntityNotFoundException if the trainer is not found.
-     *
-     * @param id The unique identifier of the trainer.
-     * @return TrainerDTO corresponding to the given id.
-     * @throws EntityNotFoundException If no trainer is found for the given id.
-     */
-    @Override
-    public TrainerDTO getById(Long id) {
-        log.debug("Request to retrieve trainer by id: {}", id);
-        return trainerDTOMapper.apply(trainerRepository.findById(id));
-    }
-
-    /**
-     * Retrieves all trainers from the database.
-     *
-     * @return A list of TrainerDTOs for all trainers.
-     */
-    @Override
-    public List<TrainerDTO> getAllTrainers() {
-        log.debug("Request to retrieve all trainers");
-        List<TrainerDTO> list = trainerRepository.findAll().stream().map(trainerDTOMapper).toList();
-        log.info("All trainers retrieved successfully");
-        return list;
-    }
 
     /**
      * Retrieves a trainer by their username.
@@ -113,22 +87,6 @@ public class TrainerServiceImpl implements TrainerService {
         return trainerDTOMapper.apply(trainerRepository.findByUserUsername(username));
     }
 
-    /**
-     * Retrieves a page of trainers based on the given filter criteria.
-     *
-     * @param page   The page number of the result set.
-     * @param size   The size of the page.
-     * @param search The search criteria to filter trainers.
-     * @return A PageGeneral object containing a list of TrainerDTOs and pagination information.
-     */
-    @Override
-    public PageGeneral<TrainerDTO> getByFilter(Integer page, Integer size, String search) {
-        log.debug("Retrieving all trainees");
-        Page<Trainer> trainees = trainerRepository.getByFilter(page, size, search);
-        log.debug("Retrieved all trainees: {}", trainees);
-        List<TrainerDTO> collect = trainees.getContent().stream().map(trainerDTOMapper).collect(Collectors.toList());
-        return new PageGeneral<>(collect, trainees.getNumber(), trainees.getSize(), trainees.getTotalElements());
-    }
 
     /**
      * Retrieves a page of trainers who are not assigned, based on the given criteria.

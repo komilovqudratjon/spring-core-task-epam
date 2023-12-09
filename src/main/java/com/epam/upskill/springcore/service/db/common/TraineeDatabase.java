@@ -82,7 +82,8 @@ public class TraineeDatabase {
 
             traineeRepository.deleteByTrainerTraineeById(user.getId());
             trainingDatabase.deleteByTraineeId(trainee.getId());
-            traineeRepository.deleteId(trainee.getId());
+            traineeRepository.deleteId(user.getId());
+//            userDatabase.deleteById(user.getId());
 
         } else {
             log.info("No trainee found with username: {}", username);

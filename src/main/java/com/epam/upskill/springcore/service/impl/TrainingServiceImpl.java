@@ -69,37 +69,6 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     /**
-     * Retrieves a training record by its ID.
-     *
-     * @param id The ID of the training to be retrieved.
-     * @return The TrainingDTO corresponding to the given ID.
-     * @throws EntityNotFoundException if the training with the specified ID is not found.
-     */
-    @Override
-    public TrainingDTO getById(Long id) {
-        log.debug("Request to retrieve training by id: {}", id);
-        Optional<Training> training = trainingRepository.findById(id);
-
-        return trainingDTOMapper.apply(training.orElseThrow(() -> {
-            log.error("Trainer not found by id: {}", id);
-            return new EntityNotFoundException("Trainer not found by id: " + id);
-        }));
-    }
-
-    /**
-     * Retrieves all training records.
-     *
-     * @return A list of TrainingDTOs representing all trainings.
-     */
-    @Override
-    public List<TrainingDTO> getAll() {
-        log.debug("Request to retrieve all trainings");
-        List<TrainingDTO> list = trainingRepository.findAll().stream().map(trainingDTOMapper).toList();
-        log.info("All trainings retrieved successfully");
-        return list;
-    }
-
-    /**
      * Retrieves a paginated list of trainings for a specific trainee within a given period and optional filters.
      *
      * @param username     The username of the trainee.
@@ -117,7 +86,6 @@ public class TrainingServiceImpl implements TrainingService {
         Page<Training> traineeTrainings = trainingRepository.getTraineeTrainings(username, periodFrom, periodTo, trainerName, trainingType, page, size);
         log.debug("Retrieved all trainees: {}", traineeTrainings);
         return new PageGeneral<>(traineeTrainings.getContent().stream().map(trainingDTOMapper).toList(), traineeTrainings.getNumber(), traineeTrainings.getSize(), traineeTrainings.getTotalElements());
-
     }
 
     /**

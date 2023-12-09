@@ -1,4 +1,4 @@
-package com.epam.upskill.springcore.component;
+package com.epam.upskill.springcore.service.impl;
 
 import com.epam.upskill.springcore.model.*;
 import com.epam.upskill.springcore.repository.SpecializationRepository;
@@ -9,38 +9,42 @@ import com.epam.upskill.springcore.service.db.common.TrainerDatabase;
 import com.epam.upskill.springcore.service.db.common.TrainingDatabase;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 /**
- * @description: generate data for database
- * @date: 21 October 2023 $
- * @time: 4:34 PM 55 $
+ * @description: TODO
+ * @date: 09 December 2023 $
+ * @time: 3:23 AM 37 $
  * @author: Qudratjon Komilov
  */
 @Component
-@RequiredArgsConstructor
 @Slf4j
-public class DataLoader implements CommandLineRunner {
+public class GenerateDateTest {
 
-    private final TraineeDatabase traineeRepository;
-    private final TrainerDatabase trainerRepository;
-    private final TrainingDatabase trainingRepository;
-    private final TrainingTypeRepository trainingTypeRepository;
-    private final SpecializationRepository specializationRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    TraineeDatabase traineeRepository;
+    @Autowired
+    TrainerDatabase trainerRepository;
+    @Autowired
+    TrainingDatabase trainingRepository;
+    @Autowired
+    TrainingTypeRepository trainingTypeRepository;
+    @Autowired
+    SpecializationRepository specializationRepository;
+    @Autowired
+    UserRepository userRepository;
     String password = "password";
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     public final Lorem lorem = LoremIpsum.getInstance();
 
-    @Override
-    public void run(String... args) {
+    public void generate() {
         log.info("Loading data...");
 
         for (long i = 0; i < 5; i++) {
@@ -155,5 +159,6 @@ public class DataLoader implements CommandLineRunner {
         log.info("...data loaded");
 
     }
+
 
 }

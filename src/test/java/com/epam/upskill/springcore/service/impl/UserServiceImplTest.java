@@ -1,16 +1,22 @@
 package com.epam.upskill.springcore.service.impl;
 
+import com.epam.upskill.springcore.model.dtos.LoginDTO;
+import com.epam.upskill.springcore.model.dtos.LoginResDTO;
+import com.epam.upskill.springcore.model.dtos.RestUserDTO;
+import com.epam.upskill.springcore.model.dtos.UserDTO;
 import com.epam.upskill.springcore.service.UserService;
-import com.epam.upskill.springcore.service.db.common.UserDatabase;
-import com.epam.upskill.springcore.service.impl.mapper.UserDTOMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.List;
+
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @description: TODO
@@ -18,73 +24,68 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @time: 2:38 AM 00 $
  * @author: Qudratjon Komilov
  */
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class UserServiceImplTest {
 
-    @Mock
-    private UserDatabase userDatabase;
+    @Autowired
+    private UserService userService;
 
-    @Mock
-    private UserDTOMapper userDTOMapper;
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Doe";
+    private static final String USERNAME = "john.doe";
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @InjectMocks
-    private UserService userService = new UserServiceImpl(userDatabase, userDTOMapper, passwordEncoder);
-
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
+    private static String PASSWORD = null;
 
     @Test
     void register() {
         // Arrange
-        // Create any necessary test data
+        RestUserDTO userDTO = new RestUserDTO(null, FIRST_NAME, LAST_NAME);
 
         // Act
-        // Call the method under test
+        LoginResDTO result = userService.register(userDTO);
+
 
         // Assert
-        // Verify the results
+        assertNotNull(result);
+        assertNotNull(result.id());
+        assertEquals("john.doe", result.username());
+        PASSWORD = result.password();
     }
 
     @Test
     void login() {
         // Arrange
+        LoginResDTO loginResDTO = new LoginResDTO(null, USERNAME, PASSWORD);
+
 
         // Act
+        userService.login(loginResDTO);
 
         // Assert
     }
 
     @Test
     void changePassword() {
+        Authentication auth = new UsernamePasswordAuthenticationToken(USERNAME, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        SecurityContextHolder.getContext().setAuthentication(auth);
         // Arrange
+        LoginDTO loginDTO = new LoginDTO(null, USERNAME, PASSWORD + PASSWORD, PASSWORD);
 
         // Act
+        LoginResDTO loginResDTO = userService.changePassword(loginDTO);
 
         // Assert
+        userService.login(loginResDTO);
+
     }
 
-    @Test
-    void update() {
-        // Arrange
-
-        // Act
-
-        // Assert
-    }
 
     @Test
     void activate() {
         // Arrange
-
+        Long id = 1L;
         // Act
+        userService.activate(id);
 
         // Assert
     }
@@ -92,27 +93,14 @@ class UserServiceImplTest {
     @Test
     void getMe() {
         // Arrange
-
+        Authentication auth = new UsernamePasswordAuthenticationToken(USERNAME, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        SecurityContextHolder.getContext().setAuthentication(auth);
         // Act
+        UserDTO me = userService.getMe();
 
         // Assert
+        assertNotNull(me);
+        assertEquals(USERNAME, me.username());
     }
 
-    @Test
-    void generateUsername() {
-        // Arrange
-
-        // Act
-
-        // Assert
-    }
-
-    @Test
-    void generatePassword() {
-        // Arrange
-
-        // Act
-
-        // Assert
-    }
 }

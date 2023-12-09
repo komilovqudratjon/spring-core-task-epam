@@ -14,12 +14,8 @@ import java.util.List;
 
 public interface TrainerService {
     TrainerDTO update(ReqTrainerDTO trainerDTO);
-    TrainerDTO getById(Long id);
-    List<TrainerDTO> getAllTrainers();
 
     TrainerDTO getByUsername(String username);
-
-    PageGeneral<TrainerDTO> getByFilter(Integer page, Integer size, String search);
 
     PageGeneral<TrainerDTO> getNotAssignedTrainers(String traineeId, Integer page, Integer size);
 

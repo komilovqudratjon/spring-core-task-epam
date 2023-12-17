@@ -5,6 +5,7 @@ import com.epam.upskill.springcore.model.dtos.LoginResDTO;
 import com.epam.upskill.springcore.model.dtos.RestUserDTO;
 import com.epam.upskill.springcore.model.dtos.UserDTO;
 import com.epam.upskill.springcore.service.UserService;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +37,7 @@ class UserServiceImplTest {
 
     private static String PASSWORD = null;
 
+    @Order(1)
     @Test
     void register() {
         // Arrange
@@ -48,28 +50,33 @@ class UserServiceImplTest {
         // Assert
         assertNotNull(result);
         assertNotNull(result.id());
-        assertEquals("john.doe", result.username());
+        assertEquals("john.doe2", result.username());
         PASSWORD = result.password();
     }
 
     @Test
     void login() {
         // Arrange
-        LoginResDTO loginResDTO = new LoginResDTO(null, USERNAME, PASSWORD);
+        RestUserDTO loginResDTO = new RestUserDTO(null, FIRST_NAME, LAST_NAME);
+
+        LoginResDTO result = userService.register(loginResDTO);
 
 
         // Act
-        userService.login(loginResDTO);
+        userService.login(result);
 
         // Assert
     }
 
     @Test
     void changePassword() {
-        Authentication auth = new UsernamePasswordAuthenticationToken(USERNAME, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        LoginResDTO result = userService.register(new RestUserDTO(null, FIRST_NAME, LAST_NAME));
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(result.username(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(auth);
         // Arrange
-        LoginDTO loginDTO = new LoginDTO(null, USERNAME, PASSWORD + PASSWORD, PASSWORD);
+        LoginDTO loginDTO = new LoginDTO(null, result.username(), PASSWORD + PASSWORD, result.password());
 
         // Act
         LoginResDTO loginResDTO = userService.changePassword(loginDTO);

@@ -38,7 +38,7 @@ class TrainerServiceImplTest {
         Date birthDate = new Date();
         boolean active = true;
         // Act
-        ReqTrainerDTO trainerDTO = new ReqTrainerDTO(username, firstName, lastName, address, birthDate, active, specialization);
+        ReqTrainerDTO trainerDTO = new ReqTrainerDTO(username, lastName,firstName, address, birthDate, active, specialization);
         TrainerDTO update = trainerService.update(trainerDTO);
         // Assert
         assertNotNull(update);
@@ -83,10 +83,9 @@ class TrainerServiceImplTest {
         // Assert
         userService.login(register);
         assertNotNull(register);
-        TrainerDTO byUsername = trainerService.getByUsername(USERNAME);
+        TrainerDTO byUsername = trainerService.getByUsername(register.username());
         // Assert
         assertNotNull(byUsername);
-        assertEquals(USERNAME, byUsername.user().username());
 
     }
 

@@ -43,7 +43,7 @@ class TraineeServiceImplTest {
 
         Date dateOfBirth = new Date();
         String address = "London";
-        ReqTraineeDTO dto = new ReqTraineeDTO(dateOfBirth, "user2",  FIRST_NAME, LAST_NAME,true, address);
+        ReqTraineeDTO dto = new ReqTraineeDTO(dateOfBirth, "user2",  LAST_NAME,FIRST_NAME,true, address);
         // Act
         TraineeDTO traineeDTO = traineeService.update(dto);
         // Assert

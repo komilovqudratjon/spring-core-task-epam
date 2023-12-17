@@ -15,7 +15,7 @@ import java.util.Collections;
 /**
  * Configures Swagger for API documentation.
  */
-@EnableSwagger2
+//@EnableSwagger2
 @Configuration
 public class SwaggerConfig {
 

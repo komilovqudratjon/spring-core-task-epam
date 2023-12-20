@@ -1,8 +1,12 @@
 package com.epam.upskill.springcore.config;
 
+import lombok.AllArgsConstructor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
 
 /**
  * @description: TODO
@@ -13,7 +17,10 @@ import org.springframework.stereotype.Component;
 
 
 @Component
+@AllArgsConstructor
 public class CustomHealthIndicator implements HealthIndicator {
+
+    private final DataSource dataSource;
 
     @Override
     public Health health() {
@@ -25,7 +32,10 @@ public class CustomHealthIndicator implements HealthIndicator {
     }
 
     public int check() {
-        // Your logic to check health
-        return 0; // return non-zero in case of an error
+        try (Connection connection = dataSource.getConnection()) {
+            return connection.isValid(10) ? 0 : 1;
+        } catch (Exception e) {
+            return 1; // DataSource is not available or other errors
+        }
     }
 }

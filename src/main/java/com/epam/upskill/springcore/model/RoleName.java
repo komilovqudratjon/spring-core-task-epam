@@ -1,7 +1,6 @@
 package com.epam.upskill.springcore.model;
 
 /**
- * @description: TODO
  * @projectName koinot_market
  * @date: 15 February 2022 $
  * @time: 22:59 $
@@ -10,6 +9,8 @@ package com.epam.upskill.springcore.model;
 
 public enum RoleName {
     ROLE_USER,
-    ROLE_ADMIN
+    ROLE_ADMIN,
+    ROLE_TRAINER,
+    ROLE_TRAINEE
 
 }

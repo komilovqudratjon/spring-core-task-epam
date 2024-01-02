@@ -1,105 +1,130 @@
 package com.epam.upskill.springcore.service.impl;
 
-import com.epam.upskill.springcore.model.Trainee;
-import com.epam.upskill.springcore.model.Users;
-import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
-import com.epam.upskill.springcore.model.dtos.TraineeDTO;
-import com.epam.upskill.springcore.repository.UserHibernate;
-import com.epam.upskill.springcore.service.db.common.TraineeDatabase;
-import com.epam.upskill.springcore.service.impl.mapper.TraineeDTOMapper;
-import com.thedeanda.lorem.Lorem;
-import com.thedeanda.lorem.LoremIpsum;
+import com.epam.upskill.springcore.model.dtos.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Date;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @className: TraineeServiceImplTest  $
- * @description: Tests for TraineeServiceImpl
- * @date: 10 November 2023 $
- * @time: 3:24 AM 55 $
+ * @description: TODO
+ * @date: 09 December 2023 $
+ * @time: 2:37 AM 08 $
  * @author: Qudratjon Komilov
  */
+@SpringBootTest
 class TraineeServiceImplTest {
 
-    @Mock
-    private TraineeDatabase traineeRepository;
-
-    @Mock
-    UserHibernate userHibernate;
-
-    @Mock
-    private TraineeDTOMapper traineeDTOMapper;
-
-    @InjectMocks
+    @Autowired
     private TraineeServiceImpl traineeService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+    @Autowired
+    private UserServiceImpl userService;
 
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Doe";
+    private static final String USERNAME = "john.doe";
+
+
+    @Order(3)
     @Test
-    void testCreateOrUpdateTrainee() {
+    void update() {
         // Arrange
-        Lorem lorem = LoremIpsum.getInstance();
 
-        Long userId = 3L;
-        Users mockUser = new Users();
-        mockUser.setId(userId);
-        ResTraineeDTO traineeDTO = new ResTraineeDTO(1L, new Date(), lorem.getCity(), userId);
-        when(userHibernate.findById(userId)).thenReturn(Optional.of(mockUser));
-        when(traineeRepository.save(any(Trainee.class))).thenAnswer(i -> i.getArguments()[0]);
-        when(userHibernate.findById(userId)).thenReturn(Optional.of(mockUser));
-        when(traineeRepository.save(any(Trainee.class))).thenAnswer(i -> i.getArguments()[0]);
-
+        Date dateOfBirth = new Date();
+        String address = "London";
+        ReqTraineeDTO dto = new ReqTraineeDTO(dateOfBirth, "user2",  LAST_NAME,FIRST_NAME,true, address);
         // Act
-        TraineeDTO result = traineeService.createOrUpdate(traineeDTO);
-
+        TraineeDTO traineeDTO = traineeService.update(dto);
         // Assert
-        assertNull(result);
-        verify(traineeRepository).save(any(Trainee.class));
-        verify(traineeDTOMapper).apply(any(Trainee.class));
+        assertNotNull(traineeDTO);
+        assertEquals(FIRST_NAME, traineeDTO.user().firstName());
+        assertEquals(LAST_NAME, traineeDTO.user().lastName());
+        assertEquals(dateOfBirth, traineeDTO.user().dateOfBirth());
+        assertEquals(address, traineeDTO.user().address());
     }
 
-
     @Test
-    void testDeleteTrainee() {
+    void getByUsername() {
         // Arrange
-        Long id = 1L;
-
+        String username = "user1";
         // Act
-        traineeService.delete(id);
-
+        TraineeDTO trainee = traineeService.getByUsername(username);
         // Assert
-        verify(traineeRepository).deleteById(id);
+        assertNotNull(trainee);
+        assertEquals(username, trainee.user().username());
+
     }
 
-
     @Test
-    void testGetTraineeById() {
+    void deleteByUsername() {
         // Arrange
-        Long id = 3L;
-        Trainee mockTrainee = new Trainee();
-        when(traineeRepository.findById(id)).thenReturn(Optional.of(mockTrainee));
-
-        // Act&Assert
+        String username = "user0";
+        // Act
+        traineeService.deleteByUsername(username);
+        // Assert
         assertThrows(EntityNotFoundException.class, () -> {
-            traineeService.getById(id);
+            traineeService.getByUsername(username);
         });
-        verify(traineeRepository).findById(id);
-        verify(traineeDTOMapper).apply(mockTrainee);
+
+
+
     }
 
+    @Test
+    void addTrainers() {
+        // Arrange
+        String username = "user1";
+        List<String> trainerUsernames = Arrays.asList("user10", "user11");
+        // Act
+        List<TrainerDTO> trainerDTOS = traineeService.addTrainers(username, trainerUsernames);
+        // Assert
+        assertNotNull(trainerDTOS);
+        assertEquals(2, trainerDTOS.size());
+        assertEquals(trainerUsernames.get(0), trainerDTOS.get(0).user().username());
+        assertEquals(trainerUsernames.get(1), trainerDTOS.get(1).user().username());
 
+
+    }
+
+    @Order(1)
+    @Test
+    void register() {
+        // Arrange
+        ReqUserTraineeDTO traineeDTO = new ReqUserTraineeDTO(FIRST_NAME,LAST_NAME, new Date(), "London");
+        // Act
+        LoginResDTO register = traineeService.register(traineeDTO);
+        // Assert
+        assertNotNull(register);
+        TraineeDTO byUsername = traineeService.getByUsername(USERNAME);
+        // Assert
+        assertNotNull(byUsername);
+        assertEquals(USERNAME, byUsername.user().username());
+        // Assert
+        userService.login(register);
+
+    }
+
+    @Test
+    void setActiveStatus() {
+        // Arrange
+        String username = "user1";
+        boolean active = false;
+        // Act
+        traineeService.setActiveStatus(username, active);
+        // Assert
+        TraineeDTO byUsername = traineeService.getByUsername(username);
+        assertNotNull(byUsername);
+        assertEquals(active, byUsername.isActive());
+    }
 }

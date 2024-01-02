@@ -1,9 +1,7 @@
 package com.epam.upskill.springcore.service;
 
-import com.epam.upskill.springcore.model.dtos.LoginDTO;
-import com.epam.upskill.springcore.model.dtos.RestToken;
-import com.epam.upskill.springcore.model.dtos.RestUserDTO;
-import com.epam.upskill.springcore.model.dtos.UserDTO;
+import com.epam.upskill.springcore.model.Users;
+import com.epam.upskill.springcore.model.dtos.*;
 
 /**
  * @description: Service interface for Training entity.
@@ -12,14 +10,21 @@ import com.epam.upskill.springcore.model.dtos.UserDTO;
  * @author: Qudratjon Komilov
  */
 public interface UserService {
-    UserDTO register(RestUserDTO userDTO);
+    LoginResDTO register(RestUserDTO userDTO);
 
-    RestToken login(LoginDTO loginDTO);
+    JwtResponse login(LoginResDTO loginResDTO);
 
-    UserDTO changePassword(LoginDTO loginDTO);
-
-    UserDTO update(RestUserDTO restUserDTO);
+    LoginResDTO changePassword(LoginDTO loginResDTO, Users user);
 
     void activate(Long id);
+
+    UserDTO getMe(Users user);
+
+    String generateUsername(String firstName, String lastName);
+    String generatePassword();
+
+    JwtResponse refreshToken(JwtToken refreshToken);
+
+    void logout(String authToken, Users user);
 }
 

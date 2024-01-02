@@ -1,12 +1,15 @@
 package com.epam.upskill.springcore.service.db.common;
 
 import com.epam.upskill.springcore.model.Training;
-import com.epam.upskill.springcore.repository.TrainingHibernate;
-import com.epam.upskill.springcore.service.db.GenericDatabase;
+import com.epam.upskill.springcore.repository.TrainingRepository;
+import com.epam.upskill.springcore.service.db.specifications.TrainingSpecifications;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,10 +26,9 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class TrainingDatabase implements GenericDatabase<Training, Long> {
+public class TrainingDatabase {
 
-    private final GenericDatabase<Training, Long> traineeDAO;
-    private final TrainingHibernate trainingHibernate;
+    private final TrainingRepository trainingRepository;
 
     /**
      * Saves a Training entity.
@@ -36,12 +38,10 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
      * @param entity The Training entity to be saved.
      * @return The saved Training entity.
      */
-    @Override
     public Training save(Training entity) {
         log.debug("Saving a Training entity");
-        Training savedEntity = trainingHibernate.save(entity);
-        traineeDAO.save(savedEntity);
-        log.info("Training entity saved with ID: {}", savedEntity.getId());
+        Training savedEntity = trainingRepository.save(entity);
+        log.info("Training saved to PostgreSQL: {}", savedEntity);
         return savedEntity;
     }
 
@@ -54,32 +54,25 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
      * @param id The ID of the Training entity to find.
      * @return An Optional containing the found Training entity or empty if not found.
      */
-    @Override
     public Optional<Training> findById(Long id) {
         log.trace("Attempting to find Training by ID: {}", id);
-        Optional<Training> foundTraining = traineeDAO.findById(id);
-        if (foundTraining.isEmpty()) {
-            log.debug("Training not found in DAO, searching in repository");
-            foundTraining = trainingHibernate.findById(id);
-            foundTraining.ifPresent(training -> {
-                log.info("Training found in repository, saving to DAO");
-                traineeDAO.save(training);
-            });
-        }
-        return foundTraining;
+        return trainingRepository.findById(id);
     }
 
     /**
-     * Deletes a Training entity by its ID.
-     * The entity is deleted from both the DAO and the JPA repository.
-     *
-     * @param id The ID of the Training entity to be deleted.
+     * Deletes a Training entity by trainee ID.
      */
-    @Override
-    public void deleteById(Long id) {
+    public void deleteByTraineeId(Long id) {
         log.info("Deleting Training entity with ID: {}", id);
-        traineeDAO.deleteById(id);
-        trainingHibernate.deleteById(id);
+        trainingRepository.deleteByTraineeId(id);
+    }
+
+    /**
+     * get all trainings by trainee id
+     */
+    public List<Training> findAllByTraineeId(Long id) {
+        log.info("Fetching all trainings by trainee id: {}", id);
+        return trainingRepository.findAllByTraineeId(id);
     }
 
     /**
@@ -89,19 +82,28 @@ public class TrainingDatabase implements GenericDatabase<Training, Long> {
      *
      * @return A list of all Training entities.
      */
-    @Override
     public List<Training> findAll() {
         log.debug("Fetching all Training entities");
-        List<Training> allTrainings = traineeDAO.findAll();
-        if (allTrainings.isEmpty()) {
-            log.trace("No Training entities found in DAO, fetching from repository");
-            allTrainings = trainingHibernate.findAll();
-            allTrainings.forEach(training -> {
-                log.trace("Saving Training entity back to DAO");
-                traineeDAO.save(training);
-            });
-        }
-        return allTrainings;
+        return trainingRepository.findAll();
     }
 
+    public Page<Training> getTraineeTrainings(String username, Date periodFrom, Date periodTo, String trainerName, String trainingType, int page, int size) {
+        return trainingRepository.findAll(TrainingSpecifications.builder()
+                .usernameTrainee(username)
+                .periodFrom(periodFrom)
+                .periodTo(periodTo)
+                .trainerName(trainerName)
+                .trainingType(trainingType)
+                .build(), PageRequest.of(page, size));
+    }
+
+    public Page<Training> getTrainerTrainings(String username, Date periodFrom, Date periodTo, String traineeName, String trainingType, int page, int size) {
+        return trainingRepository.findAll(TrainingSpecifications.builder()
+                .usernameTrainer(username)
+                .periodFrom(periodFrom)
+                .periodTo(periodTo)
+                .traineeName(traineeName)
+                .trainingType(trainingType)
+                .build(), PageRequest.of(page, size));
+    }
 }

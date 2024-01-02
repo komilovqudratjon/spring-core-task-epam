@@ -1,8 +1,11 @@
 package com.epam.upskill.springcore.service;
 
+import com.epam.upskill.springcore.model.TrainingType;
+import com.epam.upskill.springcore.model.dtos.PageGeneral;
 import com.epam.upskill.springcore.model.dtos.ResTrainingDTO;
 import com.epam.upskill.springcore.model.dtos.TrainingDTO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,8 +19,10 @@ import java.util.List;
 public interface TrainingService {
     TrainingDTO createOrUpdate(ResTrainingDTO trainer);
 
-    TrainingDTO getById(Long id);
+    PageGeneral<TrainingDTO> getTraineeTrainings(String username, Date periodFrom, Date periodTo, String trainerName, String trainingType, int page, int size);
 
-    List<TrainingDTO> getAll();
+    PageGeneral<TrainingDTO> getTrainerTrainings(String username, Date periodFrom, Date periodTo, String traineeName, String trainingType, int page, int size);
+
+    List<TrainingType> getTrainingTypes();
 }
 

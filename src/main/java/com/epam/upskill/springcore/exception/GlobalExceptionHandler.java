@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import java.util.List;
 
 /**
@@ -81,6 +82,12 @@ public class GlobalExceptionHandler {
         List<ErrorsField> errors = e.getFieldErrors().stream().map(fieldError -> new ErrorsField(fieldError.getField(), fieldError.getDefaultMessage())).toList();
         ErrorResponseValid errorResponse = new ErrorResponseValid("Data not valid", System.currentTimeMillis(), errors);
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+    @ExceptionHandler(PersistenceException.class)
+    public ResponseEntity<ErrorResponse> handlePersistenceException(PersistenceException e) {
+        log.error("PersistenceException: ", e);
+        ErrorResponse errorResponse = new ErrorResponse("Persistence exception: " + e.getCause().getMessage(), System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
 

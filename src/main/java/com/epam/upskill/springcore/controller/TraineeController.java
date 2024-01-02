@@ -1,110 +1,125 @@
 package com.epam.upskill.springcore.controller;
 
-import com.epam.upskill.springcore.model.dtos.Page;
-import com.epam.upskill.springcore.model.dtos.ResTraineeDTO;
-import com.epam.upskill.springcore.model.dtos.TraineeDTO;
+import com.epam.upskill.springcore.model.dtos.*;
 import com.epam.upskill.springcore.service.TraineeService;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import java.util.List;
 
 /**
+ * Controller class for managing Trainee entities.
+ * This class handles HTTP requests related to Trainee operations such as registration,
+ * update, delete, and retrieval of Trainee details.
+ *
  * @description: Controller class for managing Trainee entities.
- * @date: 10 November 2023 $
- * @time: 1:07 AM 26 $
+ * @date: 10 November 2023
+ * @time: 1:07 AM 26
  * @author: Qudratjon Komilov
  */
-
 @RestController
 @RequestMapping("/v1/trainees")
 @AllArgsConstructor
+@Api(tags = "Trainee Management", value = "Endpoints for managing trainees")
+@ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
 public class TraineeController {
+
     private final TraineeService traineeService;
 
     /**
-     * Create or update a trainee.
+     * Updates an existing trainee's details.
      *
-     * @param trainee the trainee to be created or updated.
-     * @return the created or updated trainee.
+     * @param trainee The trainee object to be updated, provided in the request body.
+     * @return Updated TraineeDTO object.
      */
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    public TraineeDTO createOrUpdate(@Valid @RequestBody ResTraineeDTO trainee) {
-        return traineeService.createOrUpdate(trainee);
+    @ApiOperation(value = "Update a trainee", notes = "Updates an existing trainee's details")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully updated the trainee"), @ApiResponse(code = 400, message = "Request body not valid")})
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
+    public TraineeDTO updateTrainee(@ApiParam(value = "Trainee object to be updated", required = true) @Valid @RequestBody ReqTraineeDTO trainee) {
+        return traineeService.update(trainee);
     }
 
     /**
-     * Delete a trainee by ID.
+     * Registers a new trainee and returns login details.
      *
-     * @param id the ID of the trainee to delete.
-     * @return a response entity indicating the operation's success.
+     * @param traineeDTO The trainee registration details.
+     * @return Login response with trainee details.
      */
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        traineeService.delete(id);
+    @ApiOperation(value = "Register a new trainee", notes = "Registers a trainee and returns login details")
+    @ApiResponse(code = 201, message = "Trainee successfully registered")
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.OK)
+    public LoginResDTO register(@ApiParam(value = "Trainee registration details", required = true) @Valid @RequestBody ReqUserTraineeDTO traineeDTO) {
+        return traineeService.register(traineeDTO);
     }
 
     /**
-     * Delete a trainee by username.
+     * Deletes a trainee based on their username.
      *
-     * @param username the username of the trainee to delete.
-     * @return a response entity indicating the operation's success.
+     * @param username The username of the trainee to delete.
      */
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Delete a trainee by username", notes = "Deletes a trainee based on their username")
+    @ApiResponse(code = 204, message = "Trainee successfully deleted")
     @DeleteMapping("/username/{username}")
-    public void deleteByUsername(@PathVariable String username) {
+    @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
+    public void deleteByUsername(@ApiParam(value = "Username of the trainee to delete", required = true) @PathVariable String username) {
         traineeService.deleteByUsername(username);
     }
 
-    /**
-     * Retrieve a trainee by ID.
-     *
-     * @param id the ID of the trainee.
-     * @return the requested trainee if found.
-     */
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{id}")
-    public TraineeDTO getById(@PathVariable Long id) {
-        return traineeService.getById(id);
-    }
 
     /**
-     * Get all trainees with optional filtering by date of birth and address.
+     * Retrieves a trainee's profile based on their username.
      *
-     * @return a page of trainees.
+     * @param username The username of the trainee.
+     * @return TraineeDTO containing the profile of the trainee.
      */
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public Page<TraineeDTO> getByFilter(@RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page, @RequestParam(value = "size", defaultValue = "5") @Min(0) Integer size, @RequestParam(required = false, name = "search") String search) {
-        return traineeService.getByFilter(page, size, search);
-    }
-
-    /**
-     * Select Trainee profile by username.
-     *
-     * @param username The username of the trainer to retrieve.
-     * @return ResponseEntity containing the requested trainer.
-     */
-    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Get Trainee profile by username", notes = "Retrieves a trainee's profile based on their username")
+    @ApiResponses({@ApiResponse(code = 200, message = "Trainee profile retrieved successfully"), @ApiResponse(code = 404, message = "Trainee not found")})
     @GetMapping("/username/{username}")
-    public TraineeDTO getByUsername(@PathVariable String username) {
+    @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
+    public TraineeDTO getByUsername(@ApiParam(value = "Username of the trainee", required = true) @PathVariable String username) {
         return traineeService.getByUsername(username);
     }
 
     /**
-     *  Update Tranee's trainers list
-     *  @param traineeId The trainee id
-     *  @param trainerId The trainer id
-     *  @return ResponseEntity containing the requested trainers.
+     * Adds trainers to a trainee's list based on usernames.
+     *
+     * @param traineeUsername The username of the trainee to update.
+     * @param trainerUsername A list of trainer usernames to add to the trainee's trainers list.
+     * @return List of TrainerDTO representing the updated trainers list.
      */
+    @ApiOperation(value = "Update Trainee's trainers list", notes = "Adds trainers to a trainee's list based on usernames")
+    @ApiResponses({@ApiResponse(code = 200, message = "Trainers list updated successfully"), @ApiResponse(code = 404, message = "Trainee or trainer not found")})
+    @PutMapping("/add-trainer")
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/add-trainer/{traineeId}/{trainerId}")
-    public void addTrainers(@PathVariable Long traineeId, @PathVariable Long trainerId) {
-         traineeService.addTrainers(traineeId, trainerId);
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
+    public List<TrainerDTO> addTrainers(@ApiParam(value = "Username of the trainee to update", required = true) @RequestParam String traineeUsername, @ApiParam(value = "List of trainer usernames to add", required = true) @RequestParam List<String> trainerUsername) {
+        return traineeService.addTrainers(traineeUsername, trainerUsername);
+    }
+
+    /**
+     * Changes the active status of a trainee.
+     * This method is accessible only to users with 'ROLE_ADMIN'.
+     *
+     * @param username The username of the trainee.
+     * @param isActive The boolean flag to activate or deactivate the trainee.
+     */
+    @ApiOperation(value = "Activate or deactivate a trainee", notes = "Changes the active status of a trainee")
+    @ApiResponses({@ApiResponse(code = 200, message = "Trainee's status updated successfully"), @ApiResponse(code = 404, message = "Trainee not found")})
+    @PatchMapping("/active-status")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
+    public void setActiveStatus(@ApiParam(value = "Username of the trainee to activate or deactivate", required = true) @RequestParam String username, @ApiParam(value = "Boolean flag to activate or deactivate the trainee", required = true) @RequestParam boolean isActive) {
+        traineeService.setActiveStatus(username, isActive);
     }
 }
 

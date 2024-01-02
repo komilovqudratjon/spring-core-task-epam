@@ -10,12 +10,12 @@ package com.epam.upskill.springcore.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "trainee", uniqueConstraints = {
+@Table(
+        name = "trainee", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id"}),
 })
 @Getter
@@ -29,19 +29,13 @@ public class Trainee extends AbsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "date_of_birth")
-    private Date dateOfBirth;
-
-    @Column(name = "address")
-    private String address;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-    @ManyToMany(mappedBy = "trainees", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "trainees", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     private Set<Trainer> trainers = new HashSet<>();
 
     @Column(name = "is_active")
-    private Boolean isActive=true;
+    private Boolean isActive = true;
 }

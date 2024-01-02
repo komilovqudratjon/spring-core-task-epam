@@ -1,9 +1,10 @@
 package com.epam.upskill.springcore.service.impl.mapper;
 
 
-import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 import com.epam.upskill.springcore.model.Trainer;
+import com.epam.upskill.springcore.model.dtos.TrainerDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
@@ -20,13 +21,16 @@ public class TrainerDTOMapper implements Function<Trainer, TrainerDTO> {
 
     private final SpecializationDTOMapper specializationDTOMapper;
     private final UserDTOMapper userDTOMapper;
+    private final TraineeDTOMapper traineeDTOMapper;
 
     @Override
     public TrainerDTO apply(Trainer trainee) {
         return new TrainerDTO(
                 trainee.getId(),
                 specializationDTOMapper.apply(trainee.getSpecialization()),
-                userDTOMapper.apply(trainee.getUser())
+                userDTOMapper.apply(trainee.getUser()),
+                trainee.getTrainees().stream().map(traineeDTOMapper).toList(),
+                trainee.getIsActive()
         );
     }
 }

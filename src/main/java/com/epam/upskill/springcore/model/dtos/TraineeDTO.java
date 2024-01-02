@@ -1,6 +1,7 @@
 package com.epam.upskill.springcore.model.dtos;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @className: SpecializationRecord  $
@@ -9,7 +10,7 @@ import java.util.Date;
  * @time: 3:00 PM 28 $
  * @author: Qudratjon Komilov
  */
-public record TraineeDTO(Long id, Date dateOfBirth, String address, UserDTO user) {
+public record TraineeDTO(Long id, UserDTO user, List<TrainerDTO> trainers, Boolean isActive) {
 }
 
 

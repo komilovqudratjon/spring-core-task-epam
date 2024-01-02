@@ -1,9 +1,6 @@
 package com.epam.upskill.springcore.service;
 
-import com.epam.upskill.springcore.model.dtos.Page;
-import com.epam.upskill.springcore.model.dtos.ResTrainerDTO;
-import com.epam.upskill.springcore.model.dtos.TraineeDTO;
-import com.epam.upskill.springcore.model.dtos.TrainerDTO;
+import com.epam.upskill.springcore.model.dtos.*;
 
 import java.util.List;
 
@@ -16,16 +13,14 @@ import java.util.List;
 
 
 public interface TrainerService {
-    TrainerDTO createOrUpdate(ResTrainerDTO trainer);
-
-    TrainerDTO getById(Long id);
-
-    List<TrainerDTO> getAllTrainers();
+    TrainerDTO update(ReqTrainerDTO trainerDTO);
 
     TrainerDTO getByUsername(String username);
 
-    Page<TrainerDTO> getByFilter(Integer page, Integer size, String search);
+    PageGeneral<TrainerDTO> getNotAssignedTrainers(String traineeId, Integer page, Integer size);
 
-    Page<TrainerDTO> getNotAssignedTrainers(Long traineeId);
+    LoginResDTO register(RestUserTrainerDTO trainerDTO);
+
+    void activate(String username, boolean isActive);
 }
 

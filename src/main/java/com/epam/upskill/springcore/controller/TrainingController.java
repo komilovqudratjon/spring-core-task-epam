@@ -28,6 +28,7 @@ import java.util.List;
 @RequestMapping("/v1/trainings")
 @AllArgsConstructor
 @Api(tags = "Training Management", value = "Endpoints for managing trainings")
+@ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
 public class TrainingController {
 
     private final TrainingService trainingService;
@@ -41,7 +42,8 @@ public class TrainingController {
     @ApiOperation(value = "Create or Update a Training", notes = "Creates a new training or updates an existing one.")
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Successfully created or updated the training")})
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
+    @PostMapping("/create-update")
     public TrainingDTO createOrUpdate(@ApiParam(value = "The training data transfer object", required = true) @Valid @RequestBody ResTrainingDTO training) {
         return trainingService.createOrUpdate(training);
     }
@@ -61,6 +63,7 @@ public class TrainingController {
     @ApiOperation(value = "Get Trainee Trainings", notes = "Retrieves training records for a specific trainee.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved the trainee trainings")})
     @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     @GetMapping("/trainee")
     public PageGeneral<TrainingDTO> getTraineeTrainings(@ApiParam(value = "The username of the trainee", required = true) @RequestParam String username,
 
@@ -93,6 +96,7 @@ public class TrainingController {
     @ApiOperation(value = "Get Trainer Trainings", notes = "Retrieves all trainings conducted by a specific trainer.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved the trainer trainings")})
     @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     @GetMapping("/trainer")
     public PageGeneral<TrainingDTO> getTrainerTrainings(@ApiParam(value = "The username of the trainer", required = true) @RequestParam String username,
 
@@ -118,6 +122,7 @@ public class TrainingController {
     @ApiOperation(value = "Get Training Types", notes = "Retrieves all available training types.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved the training types")})
     @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     @GetMapping("/types")
     public List<TrainingType> getTrainingTypes() {
         return trainingService.getTrainingTypes();

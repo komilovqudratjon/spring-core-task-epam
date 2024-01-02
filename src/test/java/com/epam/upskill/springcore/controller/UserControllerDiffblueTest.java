@@ -36,43 +36,7 @@ class UserControllerDiffblueTest {
     @MockBean
     private UserService userService;
 
-    /**
-     * Method under test: {@link UserController#changePassword(LoginDTO)}
-     */
-    @Test
-    void testChangePassword() throws Exception {
-        when(userService.changePassword(Mockito.<LoginDTO>any())).thenReturn(new LoginResDTO(1L, "janedoe", "iloveyou"));
-        MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders.post("/v1/users/change-password")
-                .contentType(MediaType.APPLICATION_JSON);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        MockHttpServletRequestBuilder requestBuilder = contentTypeResult
-                .content(objectMapper.writeValueAsString(new LoginDTO(1L, "janedoe", "iloveyou", "iloveyou")));
-        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(userController).build().perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(
-                        MockMvcResultMatchers.content().string("{\"id\":1,\"username\":\"janedoe\",\"password\":\"iloveyou\"}"));
-    }
-
-    /**
-     * Method under test: {@link UserController#getMe()}
-     */
-    @Test
-    void testGetMe() throws Exception {
-        when(userService.getMe()).thenReturn(new UserDTO(1L, "42 Main St", "Jane", "Doe", "janedoe",
-                Date.from(LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()), true));
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/v1/users/me");
-        MockMvcBuilders.standaloneSetup(userController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content()
-                        .string(
-                                "{\"id\":1,\"address\":\"42 Main St\",\"firstName\":\"Jane\",\"lastName\":\"Doe\",\"username\":\"janedoe\",\"dateOfBirth"
-                                        + "\":0,\"isActive\":true}"));
-    }
 
     /**
      * Method under test: {@link UserController#login(LoginResDTO)}

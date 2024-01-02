@@ -68,24 +68,6 @@ class UserServiceImplTest {
         // Assert
     }
 
-    @Test
-    void changePassword() {
-
-        LoginResDTO result = userService.register(new RestUserDTO(null, FIRST_NAME, LAST_NAME));
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(result.username(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        // Arrange
-        LoginDTO loginDTO = new LoginDTO(null, result.username(), PASSWORD + PASSWORD, result.password());
-
-        // Act
-        LoginResDTO loginResDTO = userService.changePassword(loginDTO);
-
-        // Assert
-        userService.login(loginResDTO);
-
-    }
-
 
     @Test
     void activate() {
@@ -97,17 +79,5 @@ class UserServiceImplTest {
         // Assert
     }
 
-    @Test
-    void getMe() {
-        // Arrange
-        Authentication auth = new UsernamePasswordAuthenticationToken(USERNAME, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        // Act
-        UserDTO me = userService.getMe();
-
-        // Assert
-        assertNotNull(me);
-        assertEquals(USERNAME, me.username());
-    }
 
 }

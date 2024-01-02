@@ -1,21 +1,25 @@
 package com.epam.upskill.springcore.service.impl;
 
+import com.epam.upskill.springcore.model.UserSession;
 import com.epam.upskill.springcore.model.Users;
-import com.epam.upskill.springcore.model.dtos.LoginDTO;
-import com.epam.upskill.springcore.model.dtos.LoginResDTO;
-import com.epam.upskill.springcore.model.dtos.RestUserDTO;
-import com.epam.upskill.springcore.model.dtos.UserDTO;
-import com.epam.upskill.springcore.security.SecurityUtils;
+import com.epam.upskill.springcore.model.dtos.*;
+import com.epam.upskill.springcore.security.JwtUtil;
 import com.epam.upskill.springcore.service.UserService;
 import com.epam.upskill.springcore.service.db.common.UserDatabase;
 import com.epam.upskill.springcore.service.impl.mapper.UserDTOMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,13 +31,21 @@ import java.util.Optional;
  */
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserDatabase userDatabase;
     private final UserDTOMapper userDTOMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticate;
+    private final JwtUtil jwtUtil;
+
+    @Value("${app.userBlockTimeInMs}")
+    private Integer timeBlocked;
+
+    @Value("${app.userBlockCount}")
+    private long jwtExpirationInMs;
 
     /**
      * Registers a new user in the system.
@@ -70,15 +82,43 @@ public class UserServiceImpl implements UserService {
      * @throws SecurityException       if the password is incorrect.
      */
     @Override
-    public void login(LoginResDTO loginResDTO) {
+    public JwtResponse login(LoginResDTO loginResDTO) {
         Optional<Users> byUsername = userDatabase.findByUsername(loginResDTO.username());
         if (byUsername.isEmpty()) {
-            throw new EntityNotFoundException("User not found");
+            throw new EntityNotFoundException("Invalid username/password supplied");
         } else {
             Users users = byUsername.get();
-            if (!passwordEncoder.matches(loginResDTO.password(), users.getPassword())) {
-                throw new SecurityException("Password is incorrect");
+            if (users.getBlockedEndDate() != null && users.getBlockedEndDate().after(new Date())) {
+                users.setCount(users.getCount() + 1);
+                users.setBlockedEndDate(new Date(users.getBlockedEndDate().getTime() + timeBlocked));
+                userDatabase.save(users);
+                throw new SecurityException("User is blocked, try again few minutes later");
             }
+            try {
+                Authentication authentication = authenticate.authenticate(new UsernamePasswordAuthenticationToken(users.getUsername(), loginResDTO.password()));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                users.setCount(0);
+                users.setBlockedEndDate(null);
+                userDatabase.save(users);
+            } catch (Exception e) {
+                users.setCount(users.getCount() + 1);
+                if (users.getCount() >= 3) {
+                    users.setBlockedEndDate(new Date(System.currentTimeMillis() + timeBlocked));
+                }
+                userDatabase.save(users);
+                throw new SecurityException("Invalid username/password supplied");
+            }
+
+            UserSession newUserSession = jwtUtil.getNewUserSession(users);
+            return JwtResponse.builder()
+                    .accessToken(newUserSession.getAccessToken())
+                    .refreshToken(newUserSession.getRefreshToken())
+                    .sessionId(newUserSession.getSessionId())
+                    .username(users.getUsername())
+                    .lastName(users.getLastName())
+                    .firstName(users.getFirstName())
+                    .role(users.getRole())
+                    .build();
         }
     }
 
@@ -89,18 +129,18 @@ public class UserServiceImpl implements UserService {
      * checks if the old password is correct. If these checks pass, it updates the password.
      *
      * @param loginResDTO The DTO containing the old and new passwords.
+     * @param user        The currently logged-in user.
      * @return LoginResDTO with updated password information.
      * @throws SecurityException       if the user tries to change another user's password or if the old password is incorrect.
      * @throws EntityNotFoundException if the user is not found.
      */
     @Override
-    public LoginResDTO changePassword(LoginDTO loginResDTO) {
-        String currentUserUsername = SecurityUtils.getCurrentUserUsername();
-        if (!Objects.equals(currentUserUsername, loginResDTO.username())) {
+    public LoginResDTO changePassword(LoginDTO loginResDTO, Users user) {
+        if (!Objects.equals(user.getUsername(), loginResDTO.username())) {
             // throw forbidden exception
             throw new SecurityException("You are not allowed to change password for other users");
         }
-        Optional<Users> byUsername = userDatabase.findByUsername(SecurityUtils.getCurrentUserUsername());
+        Optional<Users> byUsername = userDatabase.findByUsername(user.getUsername());
         if (byUsername.isEmpty()) {
             throw new EntityNotFoundException("User not found");
         } else {
@@ -144,13 +184,11 @@ public class UserServiceImpl implements UserService {
      * @throws EntityNotFoundException if the user is not found.
      */
     @Override
-    public UserDTO getMe() {
-        Optional<Users> byUsername = userDatabase.findByUsername(SecurityUtils.getCurrentUserUsername());
-        if (byUsername.isEmpty()) {
+    public UserDTO getMe(Users user) {
+        if (user == null) {
             throw new EntityNotFoundException("User not found");
         } else {
-            Users users = byUsername.get();
-            return userDTOMapper.apply(users);
+            return userDTOMapper.apply(user);
         }
     }
 
@@ -185,5 +223,30 @@ public class UserServiceImpl implements UserService {
      */
     public String generatePassword() {
         return RandomStringUtils.random(10, true, false);
+    }
+
+    @Override
+    public JwtResponse refreshToken(JwtToken refreshToken) {
+
+
+        UserSession updateUserSession = jwtUtil.getUpdateUserSession(refreshToken.getToken());
+
+        return JwtResponse.builder()
+                .accessToken(updateUserSession.getAccessToken())
+                .refreshToken(updateUserSession.getRefreshToken())
+                .sessionId(updateUserSession.getSessionId())
+                .username(updateUserSession.getUser().getUsername())
+                .lastName(updateUserSession.getUser().getLastName())
+                .firstName(updateUserSession.getUser().getFirstName())
+                .role(updateUserSession.getUser().getRole())
+                .build();
+    }
+
+    @Override
+    public void logout(String authToken, Users user) {
+        boolean b = jwtUtil.deleteSession(authToken, user);
+        if (!b) {
+            throw new RuntimeException("User session not found");
+        }
     }
 }

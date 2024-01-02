@@ -25,6 +25,7 @@ import javax.validation.constraints.Min;
 @RequestMapping("/v1/trainers")
 @AllArgsConstructor
 @Api(tags = "Trainer Management", value = "Endpoints for managing trainers")
+@ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
 public class TrainerController {
 
     private final TrainerService trainerService;
@@ -40,7 +41,8 @@ public class TrainerController {
      */
     @ApiOperation(value = "Update a Trainer", notes = "Create or update trainer details.")
     @ApiResponses({@ApiResponse(code = 201, message = "Trainer created or updated successfully")})
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     @PutMapping("/update")
     public TrainerDTO update(@ApiParam(value = "Trainer data transfer object", required = true) @Valid @RequestBody ReqTrainerDTO trainer) {
         return trainerService.update(trainer);
@@ -58,6 +60,7 @@ public class TrainerController {
     @ApiResponses({@ApiResponse(code = 201, message = "Trainer registered successfully")})
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     public LoginResDTO register(@ApiParam(value = "Trainer data transfer object for registration", required = true) @Valid @RequestBody RestUserTrainerDTO traineeDTO) {
         return trainerService.register(traineeDTO);
     }
@@ -72,6 +75,7 @@ public class TrainerController {
     @ApiOperation(value = "Get Trainer by Username", notes = "Retrieve a trainer by their username.")
     @ApiResponses({@ApiResponse(code = 200, message = "Trainer retrieved successfully")})
     @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     @GetMapping("/username/{username}")
     public TrainerDTO getByUsername(@ApiParam(value = "Username of the trainer", required = true) @PathVariable String username) {
         return trainerService.getByUsername(username);
@@ -90,6 +94,7 @@ public class TrainerController {
     @ApiOperation(value = "Get Trainers Not Assigned to Trainee", notes = "Retrieve all trainers not assigned to a specific trainee.")
     @ApiResponses({@ApiResponse(code = 200, message = "Trainers retrieved successfully")})
     @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     @GetMapping("/not-assigned/{traineeUsername}")
     public PageGeneral<TrainerDTO> getNotAssignedTrainers(@ApiParam(value = "Username of the trainee", required = true) @PathVariable String traineeUsername,
 
@@ -109,6 +114,7 @@ public class TrainerController {
     @ApiOperation(value = "Activate or Deactivate Trainer", notes = "Activate or deactivate a trainer's account.")
     @ApiResponses({@ApiResponse(code = 200, message = "Trainer status updated successfully")})
     @ResponseStatus(HttpStatus.OK)
+    @ApiImplicitParams({@ApiImplicitParam(name = "Authorization", value = "Access Token", paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")})
     @PatchMapping("/status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void activate(@ApiParam(value = "Username of the trainer", required = true) @RequestParam String username,

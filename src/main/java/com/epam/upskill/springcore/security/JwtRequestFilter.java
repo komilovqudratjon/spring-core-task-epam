@@ -11,8 +11,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @description: TODO to filter all requests and validate the token
@@ -31,32 +33,28 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
-        try {
-            try {
-                String bearerToken = request.getHeader("Authorization");
-                String jwt = tokenProvider.parseJwt(bearerToken);
-
-                if (StringUtils.hasText(jwt) && tokenProvider.validateAccessToken(jwt)) {
-                    String userId = tokenProvider.getUsernameFromJWT(jwt);
-                    UserDetails userDetails;
-
-                    userDetails = usersDetails.loadUserByUsername(userId);
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                }
-            } catch (Exception ex) {
-                log.error("Could not set user authentication in security context {}", ex.getMessage());
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken)) {
+            String s = tokenProvider.parseJwt(bearerToken);
+            if (tokenProvider.validateAccessToken(s)) {
+                authenticateUser(s, request);
             }
+        }
+        try {
             chain.doFilter(request, response);
-        } catch (Exception e) {
-            log.error("token error {}", e.getMessage());
+        } catch (IOException | ServletException e) {
+            throw new RuntimeException(e);
         }
     }
+
+
+    private void authenticateUser(String jwt, HttpServletRequest request) {
+        String userId = tokenProvider.getUsernameFromJWT(jwt);
+        UserDetails userDetails = usersDetails.loadUserByUsername(userId);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
 }
 

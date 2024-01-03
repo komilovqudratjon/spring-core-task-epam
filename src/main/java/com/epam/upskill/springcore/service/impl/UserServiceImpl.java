@@ -1,6 +1,5 @@
 package com.epam.upskill.springcore.service.impl;
 
-import com.epam.upskill.springcore.model.UserSession;
 import com.epam.upskill.springcore.model.Users;
 import com.epam.upskill.springcore.model.dtos.*;
 import com.epam.upskill.springcore.security.JwtUtil;
@@ -45,7 +44,7 @@ public class UserServiceImpl implements UserService {
     private Integer timeBlocked;
 
     @Value("${app.userBlockCount}")
-    private long jwtExpirationInMs;
+    private long numberOfAttempts;
 
     /**
      * Registers a new user in the system.
@@ -71,56 +70,6 @@ public class UserServiceImpl implements UserService {
         return new LoginResDTO(save.getId(), username, password);
     }
 
-    /**
-     * Handles user login.
-     * <p>
-     * This method verifies the username and password provided in the login response DTO.
-     * If the credentials are incorrect, it throws a security exception.
-     *
-     * @param loginResDTO The login response DTO containing the username and password.
-     * @throws EntityNotFoundException if the user is not found.
-     * @throws SecurityException       if the password is incorrect.
-     */
-    @Override
-    public JwtResponse login(LoginResDTO loginResDTO) {
-        Optional<Users> byUsername = userDatabase.findByUsername(loginResDTO.username());
-        if (byUsername.isEmpty()) {
-            throw new EntityNotFoundException("Invalid username/password supplied");
-        } else {
-            Users users = byUsername.get();
-            if (users.getBlockedEndDate() != null && users.getBlockedEndDate().after(new Date())) {
-                users.setCount(users.getCount() + 1);
-                users.setBlockedEndDate(new Date(users.getBlockedEndDate().getTime() + timeBlocked));
-                userDatabase.save(users);
-                throw new SecurityException("User is blocked, try again few minutes later");
-            }
-            try {
-                Authentication authentication = authenticate.authenticate(new UsernamePasswordAuthenticationToken(users.getUsername(), loginResDTO.password()));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                users.setCount(0);
-                users.setBlockedEndDate(null);
-                userDatabase.save(users);
-            } catch (Exception e) {
-                users.setCount(users.getCount() + 1);
-                if (users.getCount() >= 3) {
-                    users.setBlockedEndDate(new Date(System.currentTimeMillis() + timeBlocked));
-                }
-                userDatabase.save(users);
-                throw new SecurityException("Invalid username/password supplied");
-            }
-
-            UserSession newUserSession = jwtUtil.getNewUserSession(users);
-            return JwtResponse.builder()
-                    .accessToken(newUserSession.getAccessToken())
-                    .refreshToken(newUserSession.getRefreshToken())
-                    .sessionId(newUserSession.getSessionId())
-                    .username(users.getUsername())
-                    .lastName(users.getLastName())
-                    .firstName(users.getFirstName())
-                    .role(users.getRole())
-                    .build();
-        }
-    }
 
     /**
      * Changes the password for the currently logged-in user.
@@ -225,26 +174,70 @@ public class UserServiceImpl implements UserService {
         return RandomStringUtils.random(10, true, false);
     }
 
+    /**
+     * Refreshes the access token.
+     * <p>
+     * This method takes a refresh token
+     *
+     * @param refreshToken the refresh token
+     * @return JwtResponse containing the new access token and refresh token
+     */
     @Override
     public JwtResponse refreshToken(JwtToken refreshToken) {
-
-
-        UserSession updateUserSession = jwtUtil.getUpdateUserSession(refreshToken.getToken());
-
-        return JwtResponse.builder()
-                .accessToken(updateUserSession.getAccessToken())
-                .refreshToken(updateUserSession.getRefreshToken())
-                .sessionId(updateUserSession.getSessionId())
-                .username(updateUserSession.getUser().getUsername())
-                .lastName(updateUserSession.getUser().getLastName())
-                .firstName(updateUserSession.getUser().getFirstName())
-                .role(updateUserSession.getUser().getRole())
-                .build();
+        return jwtUtil.getUpdatedUserSession(refreshToken.getToken());
     }
 
+    /**
+     * Handles user login.
+     * <p>
+     * This method verifies the username and password provided in the login response DTO.
+     * If the credentials are incorrect, it throws a security exception.
+     *
+     * @param loginResDTO The login response DTO containing the username and password.
+     * @throws EntityNotFoundException if the user is not found.
+     * @throws SecurityException       if the password is incorrect.
+     */
+    @Override
+    public JwtResponse login(LoginResDTO loginResDTO) {
+        Optional<Users> byUsername = userDatabase.findByUsername(loginResDTO.username());
+        if (byUsername.isEmpty()) {
+            throw new EntityNotFoundException("Invalid username/password supplied");
+        } else {
+            Users users = byUsername.get();
+            if (users.getBlockedEndDate() != null && users.getBlockedEndDate().after(new Date())) {
+                users.setCount(users.getCount() + 1);
+                users.setBlockedEndDate(new Date(users.getBlockedEndDate().getTime() + timeBlocked));
+                userDatabase.save(users);
+                throw new SecurityException("User is blocked, try again few minutes later");
+            }
+            try {
+                Authentication authentication = authenticate.authenticate(new UsernamePasswordAuthenticationToken(users.getUsername(), loginResDTO.password()));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                users.setCount(0);
+                users.setBlockedEndDate(null);
+                userDatabase.save(users);
+            } catch (Exception e) {
+                users.setCount(users.getCount() + 1);
+                if (users.getCount() >= numberOfAttempts) {
+                    users.setBlockedEndDate(new Date(System.currentTimeMillis() + timeBlocked));
+                }
+                userDatabase.save(users);
+                throw new SecurityException("Invalid username/password supplied");
+            }
+
+            return jwtUtil.getNewUserSession(users);
+        }
+    }
+
+    /**
+     * Logout a user.
+     * <p>
+     * This method takes a session id and uses the UserService to logout a user.
+     * It requires for all users.
+     */
     @Override
     public void logout(String authToken, Users user) {
-        boolean b = jwtUtil.deleteSession(authToken, user);
+        boolean b = jwtUtil.deleteSession(jwtUtil.parseJwt(authToken), user);
         if (!b) {
             throw new RuntimeException("User session not found");
         }

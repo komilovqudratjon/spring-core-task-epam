@@ -65,8 +65,6 @@ public class UserController {
     @ApiOperation(value = "Get User Profile", notes = "Retrieves the profile of the currently logged-in user")
     @ApiResponse(code = 200, message = "User profile retrieved successfully")
     public UserDTO getMe(@ApiIgnore @CurrentUser Users user) {
-        System.out.println("user = " + user);
-
         return userService.getMe( user);
     }
 
